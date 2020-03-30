@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   config : {
-    baseUrl: 'http://fhirserver-env-1.eba-aepmzc4d.eu-west-2.elasticbeanstalk.com:8186/R4'
+    baseUrl: 'http://fhir.test.xgenome.co.uk/R4'
   }
 };
 

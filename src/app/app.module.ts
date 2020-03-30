@@ -46,6 +46,8 @@ import { BodyComponent } from './body/body.component';
 import {NgxGraphModule} from "@swimlane/ngx-graph";
 import {NgxChartsModule} from "@swimlane/ngx-charts";
 import { HttpClientModule } from '@angular/common/http';
+import {MatTableModule} from "@angular/material/table";
+import {MatSortModule} from "@angular/material/sort";
 
 
 @NgModule({
@@ -54,54 +56,60 @@ import { HttpClientModule } from '@angular/common/http';
     MainMenuComponent,
     BodyComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    HttpClientModule,
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        HttpClientModule,
 
-    MatButtonModule,
-    MatListModule,
-    MatIconModule,
-    MatCardModule,
-    MatMenuModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonToggleModule,
-    MatSlideToggleModule,
-    MatProgressSpinnerModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatToolbarModule,
-    MatTabsModule,
-    MatSidenavModule,
-    MatTooltipModule,
-    MatRippleModule,
-    MatRadioModule,
-    MatGridListModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatSliderModule,
-    MatAutocompleteModule,
+        MatButtonModule,
+        MatListModule,
+        MatIconModule,
+        MatCardModule,
+        MatMenuModule,
+        MatInputModule,
+        MatSelectModule,
+        MatButtonToggleModule,
+        MatSlideToggleModule,
+        MatProgressSpinnerModule,
+        MatDialogModule,
+        MatSnackBarModule,
+        MatToolbarModule,
+        MatTabsModule,
+        MatSidenavModule,
+        MatTooltipModule,
+        MatRippleModule,
+        MatRadioModule,
+        MatGridListModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatSliderModule,
+        MatAutocompleteModule,
 
-    CovalentCommonModule,
-    CovalentLayoutModule,
-    CovalentMediaModule,
-    CovalentExpansionPanelModule,
-    CovalentStepsModule,
-    CovalentDialogsModule,
-    CovalentLoadingModule,
-    CovalentSearchModule,
-    CovalentPagingModule,
-    CovalentNotificationsModule,
-    CovalentMenuModule,
-    CovalentDataTableModule,
-    CovalentMessageModule,
-    NgxGraphModule,
-    NgxChartsModule,
+      MatTableModule,
+      MatSortModule,
+
+        CovalentCommonModule,
+        CovalentLayoutModule,
+        CovalentMediaModule,
+        CovalentExpansionPanelModule,
+        CovalentStepsModule,
+        CovalentDialogsModule,
+        CovalentLoadingModule,
+        CovalentSearchModule,
+        CovalentPagingModule,
+        CovalentNotificationsModule,
+        CovalentMenuModule,
+        CovalentDataTableModule,
+        CovalentMessageModule,
+
+        NgxGraphModule,
+        NgxChartsModule,
 
 
-  ],
+
+
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
