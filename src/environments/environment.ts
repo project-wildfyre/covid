@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   config : {
-    baseUrl: 'http://fhir.test.xgenome.co.uk/R4'
+    baseUrl: 'https://fhir.test.xgenome.co.uk/R4'
   }
 };
 
