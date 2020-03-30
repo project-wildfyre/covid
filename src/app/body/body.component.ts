@@ -29,7 +29,7 @@ export class BodyComponent implements OnInit {
     }
   ];
   // width - height
-  view: any[] = [700, 500];
+  view: any[] = [500, 400];
 
   // options
   legend: boolean = true;
