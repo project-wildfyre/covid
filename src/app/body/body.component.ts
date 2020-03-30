@@ -10,17 +10,26 @@ import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
 })
 export class BodyComponent implements OnInit {
 
-  multi: any[] = [
+  multiCasesPerMillion: any[] = [
     {
       "name": "Area",
       "series": [
       ]
     }
   ];
-  view: any[] = [900, 700];
+
+  multiTotalCases: any[] = [
+    {
+      "name": "Area",
+      "series": [
+      ]
+    }
+  ];
+  // width - height
+  view: any[] = [600, 400];
 
   // options
-  legend: boolean = true;
+  legend: boolean = false;
   showLabels: boolean = true;
   animations: boolean = true;
   xAxis: boolean = true;
@@ -28,7 +37,7 @@ export class BodyComponent implements OnInit {
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
   xAxisLabel: string = 'Date';
-  yAxisLabel: string = 'Population';
+  yAxisLabel: string = 'Case Per Million';
   timeline: boolean = true;
 
   cases = new Map();
@@ -42,7 +51,7 @@ export class BodyComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.fhirService.get('/MeasureReport?_count=100').subscribe(
+    this.fhirService.get('/MeasureReport?reporter.partof=Location/1610&_count=100&_sort=period&date=le2020-03-30').subscribe(
       result => {
         const bundle = <R4.IBundle> result;
         this.processBundle(bundle);
@@ -58,7 +67,6 @@ export class BodyComponent implements OnInit {
           let ident = measure.identifier[0].value;
           let idents = ident.split('-');
           if (!this.cases.has(idents[0])) {
-            console.log(idents[0]);
             this.cases.set(idents[0],[]);
           };
           var map : IMeasureReport[] = this.cases.get(idents[0]);
@@ -85,21 +93,36 @@ export class BodyComponent implements OnInit {
   }
 
   buildGraph() {
-    this.multi = [];
+    this.multiTotalCases = [];
+    this.multiCasesPerMillion = [];
     for (let entry of this.cases.entries()) {
-      var ent = {};
-      ent.name = entry[0];
-      ent.series = [];
+      var entTot = {};
+      var entPer = {};
+      entTot.name = entry[0];
+      entTot.series = [];
+      entPer.name = entry[0];
+      entPer.series = [];
       var reps : IMeasureReport[] = entry[1];
       for (const rep of reps) {
-          var val = {};
+          var valTot = {};
           var dat = rep.date.split('T');
-          val.name = dat[0];
-          ent.name = rep.subject.display;
-          val.value = rep.group[0].measureScore.value;
-          ent.series.push(val);
+          valTot.name = dat[0];
+          entTot.name = rep.subject.display;
+
+          valTot.value = rep.group[0].measureScore.value;
+          entTot.series.push(valTot);
+
+        var valPer = {};
+
+        valPer.name = dat[0];
+        entPer.name = rep.subject.display;
+        entPer.name = rep.subject.display;
+        valPer.value = rep.group[1].measureScore.value;
+        entPer.series.push(valPer);
+
       }
-      this.multi.push(ent);
+      this.multiTotalCases.push(entTot);
+      this.multiCasesPerMillion.push(entPer);
       //console.log(entry[0], entry[1]);    //"Lokesh" 37 "Raj" 35 "John" 40
     }
   }

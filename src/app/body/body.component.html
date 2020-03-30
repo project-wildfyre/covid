@@ -1,6 +1,6 @@
 <div flex layout="row">
   <mat-card flex>
-    <span *ngIf="multi !== undefined">
+    <span *ngIf="multiTotalCases !== undefined">
 <ngx-charts-line-chart
 
   [view]="view"
@@ -11,13 +11,31 @@
   [xAxis]="xAxis"
   [yAxis]="yAxis"
   [xAxisLabel]="xAxisLabel"
-  [yAxisLabel]="yAxisLabel"
+  yAxisLabel='Total Cases'
   [timeline]="timeline"
-  [results]="multi"
+  [results]="multiTotalCases"
   (select)="onSelect($event)"
   (activate)="onActivate($event)"
   (deactivate)="onDeactivate($event)"
 >
+</ngx-charts-line-chart>
+      <ngx-charts-line-chart
+
+        [view]="view"
+        [scheme]="colorScheme"
+        [legend]="legend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxis]="xAxis"
+        [yAxis]="yAxis"
+        [xAxisLabel]="xAxisLabel"
+        yAxisLabel='Cases/Million'
+        [timeline]="timeline"
+        [results]="multiCasesPerMillion"
+        (select)="onSelect($event)"
+        (activate)="onActivate($event)"
+        (deactivate)="onDeactivate($event)"
+      >
 </ngx-charts-line-chart>
     </span>
 
