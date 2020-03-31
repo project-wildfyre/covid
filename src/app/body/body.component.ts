@@ -12,7 +12,9 @@ export interface Case {
   name: string;
   population: number;
   cases: number;
-  casespermillion: string;
+  casespermillion: number;
+  healthindex: number;
+  depravityindex: number;
 }
 
 @Component({
@@ -45,6 +47,7 @@ export class BodyComponent implements OnInit {
   ];
   // width - height
   view: any[] = [500, 450];
+  aview: any[] = [700,200];
 
   // options
   legend: boolean = true;
@@ -70,9 +73,18 @@ export class BodyComponent implements OnInit {
 
   dataSource = new MatTableDataSource(this.caseTable);
 
-  displayedColumns = ['name', 'population','cases','casespermillion'];
+  displayedColumns = ['name', 'population','cases','casespermillion','healthindex', 'depravityindex'];
 
   todayStr: string;
+
+  single: any[];
+
+
+  // options
+  agradient: boolean = true;
+  ashowLegend: boolean = true;
+  ashowLabels: boolean = true;
+  isDoughnut: boolean = false;
 
   @ViewChild(MatSort, {static: false}) sort: MatSort;
 
@@ -84,7 +96,8 @@ export class BodyComponent implements OnInit {
   ngOnInit(): void {
     var today = new Date() ;
     console.log('innerWidth initial = '+window.innerWidth);
-    this.view = [(window.innerWidth / 2)*0.97, 450];
+    this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
+    this.aview = [(window.innerWidth)*0.98, this.aview[1]];
     today.setDate(today.getDate()-1);
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -93,6 +106,11 @@ export class BodyComponent implements OnInit {
     this.todayStr = yyyy+ '-' + mm + '-' + dd;
 
     this.populate('E92000001');
+  }
+
+  onResize(event) {
+    this.aview = [(event.target.innerWidth)*0.98,  this.aview[1]];
+    this.view = [(event.target.innerWidth / 2)*0.97,  this.view[1]];
   }
 
   round(num) {
@@ -203,11 +221,19 @@ export class BodyComponent implements OnInit {
         entPer.series.push(valPer);
         if (rep.date.startsWith(this.todayStr)) {
           // TODO  this.reports.push(rep);
+          var hi = 0;
+          var mdi = 0;
+          if (rep.group.length>2) {
+            hi=rep.group[2].measureScore.value;
+            mdi=rep.group[3].measureScore.value;
+          }
           var report : Case = {
             name : rep.subject.display,
             population : rep.group[0].population[0].count,
             cases : valTot.value,
-            casespermillion : valPer.value
+            casespermillion : valPer.value,
+            healthindex : hi,
+            depravityindex :mdi
           };
           this.caseTable.push(report);
           var tot = {
@@ -237,11 +263,7 @@ export class BodyComponent implements OnInit {
   onDeactivate(data): void {
   //  console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
-  onResize(event) {
-    //console.log(event);
-    //console.log(event.target.innerWidth);
-    this.view = [(event.target.innerWidth / 2)*0.97, 450];
-  }
+
 
   /*
   @HostListener('window:resize', ['$event'])
