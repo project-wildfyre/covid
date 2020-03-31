@@ -5,6 +5,15 @@ import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
 import {TdLoadingService} from "@covalent/core/loading";
 import {IMeasureReportDataSource} from "../datasource/measure-report-data-source";
 import {MatSort, Sort} from "@angular/material/sort";
+import {MatTableDataSource} from "@angular/material/table";
+
+
+export interface Case {
+  name: string;
+  population: number;
+  cases: number;
+  casespermillion: string;
+}
 
 @Component({
   selector: 'app-body',
@@ -49,13 +58,17 @@ export class BodyComponent implements OnInit {
     domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
   };
 
-  reports: IMeasureReport[] = [];
-  dataSource: IMeasureReportDataSource;
-  displayedColumns = ['display', 'count','value','casespermillion'];
+ // reports: IMeasureReport[] = [];
+
+  caseTable :Case[] = [];
+
+  dataSource = new MatTableDataSource(this.caseTable);
+
+  displayedColumns = ['name', 'population','cases','casespermillion'];
 
   todayStr: string;
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, {static: false}) sort: MatSort;
 
   constructor(private fhirService: BrowserService,
               private _loadingService: TdLoadingService) {
@@ -64,6 +77,7 @@ export class BodyComponent implements OnInit {
 
   ngOnInit(): void {
     var today = new Date() ;
+
     today.setDate(today.getDate()-1);
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -153,7 +167,7 @@ export class BodyComponent implements OnInit {
   buildGraph() {
     this.multiTotalCases =  [];
     this.multiCasesPerMillion = [ ];
-    this.reports = [];
+    this.caseTable = [];
     for (let entry of this.cases.entries()) {
       var entTot :any = {};
       var entPer: any = {};
@@ -166,9 +180,7 @@ export class BodyComponent implements OnInit {
           var valTot :any = {};
           var dat = rep.date.split('T');
        //   console.log(dat[0] + " today str " + this.todayStr );
-          if (rep.date.startsWith(this.todayStr)) {
-            this.reports.push(rep);
-          }
+
           valTot.name = dat[0];
           entTot.name = rep.subject.display;
 
@@ -182,14 +194,26 @@ export class BodyComponent implements OnInit {
         entPer.name = rep.subject.display;
         valPer.value = rep.group[1].measureScore.value;
         entPer.series.push(valPer);
+        if (rep.date.startsWith(this.todayStr)) {
+          // TODO  this.reports.push(rep);
+          var report : Case = {
+            name : rep.subject.display,
+            population : rep.group[0].population[0].count,
+            cases : valTot.value,
+            casespermillion : valPer.value
+          };
 
+          console.log(report);
+          this.caseTable.push(report);
+        }
       }
       this.multiTotalCases.push(entTot);
       this.multiCasesPerMillion.push(entPer);
       //console.log(entry[0], entry[1]);    //"Lokesh" 37 "Raj" 35 "John" 40
     }
-    this.dataSource = new IMeasureReportDataSource(this.reports, this.sort);
-
+   // this.dataSource = new IMeasureReportDataSource(this.reports, this.sort);
+    this.dataSource.data = this.caseTable;
+    this.dataSource.sort = this.sort;
     this._loadingService.resolve('overlayStarSyntax');
   }
   onSelect(data): void {
