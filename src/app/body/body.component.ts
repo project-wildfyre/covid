@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
 import {BrowserService} from "../service/browser.service";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
@@ -22,6 +22,12 @@ export interface Case {
 })
 export class BodyComponent implements OnInit {
 
+  totalCases: any[] =[
+    {
+      "name": "UK",
+      "value": 0
+    }
+  ];
   multiCasesPerMillion: any[] = [
     {
       "name": "Area",
@@ -38,7 +44,7 @@ export class BodyComponent implements OnInit {
     }
   ];
   // width - height
-  view: any[] = [500, 400];
+  view: any[] = [500, 450];
 
   // options
   legend: boolean = true;
@@ -50,7 +56,7 @@ export class BodyComponent implements OnInit {
   showXAxisLabel: boolean = true;
   xAxisLabel: string = 'Date';
   yAxisLabel: string = 'Case Per Million';
-  timeline: boolean = true;
+  timeline: boolean = false;
 
   cases = new Map();
 
@@ -77,7 +83,8 @@ export class BodyComponent implements OnInit {
 
   ngOnInit(): void {
     var today = new Date() ;
-
+    console.log('innerWidth initial = '+window.innerWidth);
+    this.view = [(window.innerWidth / 2)*0.97, 450];
     today.setDate(today.getDate()-1);
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -166,7 +173,8 @@ export class BodyComponent implements OnInit {
 
   buildGraph() {
     this.multiTotalCases =  [];
-    this.multiCasesPerMillion = [ ];
+    this.multiCasesPerMillion = [];
+    this.totalCases =[];
     this.caseTable = [];
     for (let entry of this.cases.entries()) {
       var entTot :any = {};
@@ -179,9 +187,8 @@ export class BodyComponent implements OnInit {
       for (const rep of reps) {
           var valTot :any = {};
           var dat = rep.date.split('T');
-       //   console.log(dat[0] + " today str " + this.todayStr );
 
-          valTot.name = dat[0];
+          valTot.name = new Date(dat[0]);
           entTot.name = rep.subject.display;
 
           valTot.value = rep.group[0].measureScore.value;
@@ -189,7 +196,7 @@ export class BodyComponent implements OnInit {
 
         var valPer:any = {};
 
-        valPer.name = dat[0];
+        valPer.name = new Date(dat[0]);
         entPer.name = rep.subject.display;
         entPer.name = rep.subject.display;
         valPer.value = rep.group[1].measureScore.value;
@@ -202,14 +209,17 @@ export class BodyComponent implements OnInit {
             cases : valTot.value,
             casespermillion : valPer.value
           };
-
-          console.log(report);
           this.caseTable.push(report);
+          var tot = {
+            name : rep.subject.display,
+            value : valTot.value
+          }
+          this.totalCases.push(tot);
         }
       }
       this.multiTotalCases.push(entTot);
       this.multiCasesPerMillion.push(entPer);
-      //console.log(entry[0], entry[1]);    //"Lokesh" 37 "Raj" 35 "John" 40
+
     }
    // this.dataSource = new IMeasureReportDataSource(this.reports, this.sort);
     this.dataSource.data = this.caseTable;
@@ -227,4 +237,19 @@ export class BodyComponent implements OnInit {
   onDeactivate(data): void {
   //  console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
+  onResize(event) {
+    //console.log(event);
+    //console.log(event.target.innerWidth);
+    this.view = [(event.target.innerWidth / 2)*0.97, 450];
+  }
+
+  /*
+  @HostListener('window:resize', ['$event'])
+  getScreenSize(event?) {
+    //this.screenHeight = window.innerHeight;
+    //this.screenWidth = window.innerWidth;
+    console.log('innerWidth = '+window.innerWidth);
+  }
+
+   */
 }

@@ -27,6 +27,7 @@
             <ngx-charts-line-chart
               flex
               [view]="view"
+              (window:resize)="onResize($event)"
               [scheme]="colorScheme"
               [legend]="legend"
               [showXAxisLabel]="showXAxisLabel"
@@ -92,6 +93,19 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+    </mat-card>
+    <mat-card flex>
+      <ngx-charts-pie-chart
+        flex
+        legendTitle="Total Cases"
+        [view]="view"
+        [scheme]="colorScheme"
+        [legend]=false
+        [labels]=true
+        yAxisLabel='Cases/Million'
+        [results]="totalCases"
+      >
+      </ngx-charts-pie-chart>
     </mat-card>
   </div>
   <div flex layout="row">
