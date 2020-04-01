@@ -17,6 +17,7 @@ export interface Case {
   casespermillion: number;
   healthindex: number;
   depravityindex: number;
+  perhectare: number;
   id : string;
 }
 
@@ -82,7 +83,7 @@ export class BodyComponent implements OnInit {
 
   dataSource = new MatTableDataSource(this.caseTable);
 
-  displayedColumns = ['name', 'population','cases','casespermillion','healthindex', 'depravityindex'];
+  displayedColumns = ['name', 'population','cases','casespermillion','healthindex', 'depravityindex','perhectare'];
 
   todayStr: string;
 
@@ -105,7 +106,7 @@ export class BodyComponent implements OnInit {
   ngOnInit(): void {
   //  echarts.registerMap('UK', ukjson);
     var today = new Date() ;
-    console.log('innerWidth initial = '+window.innerWidth);
+
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
     today.setDate(today.getDate()-1);
@@ -128,7 +129,14 @@ export class BodyComponent implements OnInit {
   }
 
   round(num) {
-    return this.pres(num,1);
+    var no = this.pres(num,1);
+    if (no==0) return '';
+    return no;
+  }
+  round2sf(num) {
+    var no = this.pres(num,3);
+    if (no==0) return '';
+    return no;
   }
 
   pres(value, precision) {
@@ -151,7 +159,7 @@ export class BodyComponent implements OnInit {
   }
 
   sortData(sort: Sort) {
-    console.log(sort);
+
 /*
     this.sortedData = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
@@ -167,7 +175,7 @@ export class BodyComponent implements OnInit {
   }
 
   selected(event) {
- //   console.log(event);
+
   }
    processBundle(bundle: R4.IBundle) {
     if (bundle.entry !== undefined) {
@@ -238,11 +246,21 @@ export class BodyComponent implements OnInit {
         entPer.series.push(valPer);
         if (rep.date.startsWith(this.todayStr)) {
           // TODO  this.reports.push(rep);
+
           var hi = 0;
           var mdi = 0;
-          if (rep.group.length>2) {
-            hi=rep.group[2].measureScore.value;
-            mdi=rep.group[3].measureScore.value;
+          var perhect = 0;
+          for (const gp of rep.group) {
+           if (gp.code.coding[0].code == 'HI') {
+             hi=gp.measureScore.value;
+           }
+            if (gp.code.coding[0].code == 'MDI') {
+              mdi=gp.measureScore.value;
+            }
+            if (gp.code.coding[0].code == 'PERHECT') {
+              perhect=gp.measureScore.value * 100;
+            }
+
           }
           var report : Case = {
             name : rep.subject.display,
@@ -251,6 +269,7 @@ export class BodyComponent implements OnInit {
             casespermillion : valPer.value,
             healthindex : hi,
             depravityindex :mdi,
+            perhectare : perhect,
             id: id
           };
           this.caseTable.push(report);
@@ -282,7 +301,7 @@ export class BodyComponent implements OnInit {
     this._loadingService.resolve('overlayStarSyntax');
   }
   onSelect(data): void {
-    // console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+
   }
 
   onSelectAdv(event): void {
@@ -294,11 +313,11 @@ export class BodyComponent implements OnInit {
   }
 
   onActivate(data): void {
-   // console.log('Activate', JSON.parse(JSON.stringify(data)));
+
   }
 
   onDeactivate(data): void {
-  //  console.log('Deactivate', JSON.parse(JSON.stringify(data)));
+
   }
 
 
@@ -307,7 +326,7 @@ export class BodyComponent implements OnInit {
   getScreenSize(event?) {
     //this.screenHeight = window.innerHeight;
     //this.screenWidth = window.innerWidth;
-    console.log('innerWidth = '+window.innerWidth);
+
   }
 
    */

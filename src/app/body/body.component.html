@@ -83,7 +83,7 @@
         </ng-container>
 
         <ng-container matColumnDef="casespermillion">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Cases / Million </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Case / Million </th>
           <td mat-cell *matCellDef="let report"> {{round(report.casespermillion)}} </td>
         </ng-container>
 
@@ -95,6 +95,12 @@
           <th mat-header-cell *matHeaderCellDef mat-sort-header> Avg MDI </th>
           <td mat-cell *matCellDef="let report"> {{round(report.depravityindex)}} </td>
         </ng-container>
+
+        <ng-container matColumnDef="perhectare">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Case / km sq </th>
+          <td mat-cell *matCellDef="let report"> {{round2sf(report.perhectare)}} </td>
+        </ng-container>
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
