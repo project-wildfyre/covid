@@ -17,7 +17,8 @@ export interface Case {
   casespermillion: number;
   healthindex: number;
   depravityindex: number;
-  perhectare: number;
+  perkmsq: number;
+  populationkmsq: number;
   id : string;
 }
 
@@ -83,7 +84,7 @@ export class BodyComponent implements OnInit {
 
   dataSource = new MatTableDataSource(this.caseTable);
 
-  displayedColumns = ['name', 'cases','casespermillion', 'population', 'healthindex',  'depravityindex','perhectare'];
+  displayedColumns = ['name', 'cases','casespermillion', 'population', 'healthindex',  'depravityindex','perkmsq', 'populationkmsq'];
 
   todayStr: string;
 
@@ -250,6 +251,7 @@ export class BodyComponent implements OnInit {
           var hi = 0;
           var mdi = 0;
           var perhect = 0;
+          var populationkmsq = 0;
           for (const gp of rep.group) {
            if (gp.code.coding[0].code == 'HI') {
              hi=gp.measureScore.value;
@@ -258,9 +260,11 @@ export class BodyComponent implements OnInit {
               mdi=gp.measureScore.value;
             }
             if (gp.code.coding[0].code == 'PERHECT') {
-              perhect=gp.measureScore.value * 100;
+              perhect = gp.measureScore.value * 100;
+              if (gp.measureScore.value > 0) {
+                populationkmsq = rep.group[0].population[0].count / gp.population[0].count
+              }
             }
-
           }
           var report : Case = {
             name : rep.subject.display,
@@ -269,7 +273,8 @@ export class BodyComponent implements OnInit {
             casespermillion : valPer.value,
             healthindex : hi,
             depravityindex :mdi,
-            perhectare : perhect,
+            perkmsq : perhect,
+            populationkmsq : populationkmsq,
             id: id
           };
           this.caseTable.push(report);
