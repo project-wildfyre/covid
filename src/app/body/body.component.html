@@ -1,25 +1,17 @@
-<div flex layout="row">
-  <mat-card flex>
-   &nbsp;
-    <span></span>
-    <mat-form-field>
-      <mat-label>Select a region</mat-label>
-      <mat-select (selectionChange)="selected($event)" value="E92000001" required>
-        <mat-option value="E92000001">England</mat-option>
-        <mat-option value="E12000001">North East</mat-option>
-        <mat-option value="E12000002">North West</mat-option>
-        <mat-option value="E12000003">Yorkshire and The Humber</mat-option>
-        <mat-option value="E12000004">East Midlands</mat-option>
-        <mat-option value="E12000005">West Midlands</mat-option>
-        <mat-option value="E12000006">East of England</mat-option>
-        <mat-option value="E12000007">London</mat-option>
-        <mat-option value="E12000008">South East</mat-option>
-        <mat-option value="E12000009">South West</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </mat-card>
-</div>
+
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
+  <div flex layout="row">
+    <mat-card flex>
+      <ngx-charts-advanced-pie-chart
+
+        [view]="aview"
+        [scheme]="colorScheme"
+        [results]="totalCases"
+        [gradient]="agradient"
+        (select)="onSelectAdv($event)">
+      </ngx-charts-advanced-pie-chart>
+    </mat-card>
+  </div>
   <div flex layout="row">
 
 
@@ -28,7 +20,7 @@
               flex
               [view]="view"
               (window:resize)="onResize($event)"
-              [scheme]="colorScheme"
+
               [legend]="legend"
               [showXAxisLabel]="showXAxisLabel"
               [showYAxisLabel]="showYAxisLabel"
@@ -49,7 +41,6 @@
              <ngx-charts-line-chart
                 flex
                 [view]="view"
-                [scheme]="colorScheme"
                 [legend]="legend"
                 [showXAxisLabel]="showXAxisLabel"
                 [showYAxisLabel]="showYAxisLabel"
@@ -67,24 +58,18 @@
 
     </mat-card>
 </div>
-  <div flex layout="row">
-    <mat-card flex>
-      <ngx-charts-advanced-pie-chart
 
-        [view]="aview"
-        [scheme]="colorScheme"
-        [results]="totalCases"
-        [gradient]="agradient">
-      </ngx-charts-advanced-pie-chart>
-    </mat-card>
-  </div>
 
   <div flex layout="row">
     <mat-card flex>
       <table fxFill="100" mat-table matSort [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
           <th mat-header-cell  *matHeaderCellDef mat-sort-header> Area </th>
-          <td mat-cell *matCellDef="let report"> {{report.name}} </td>
+          <td mat-cell *matCellDef="let report">
+            <div style="word-wrap: break-word">
+              {{report.name}}
+            </div>
+           </td>
         </ng-container>
 
         <ng-container matColumnDef="population">
@@ -115,15 +100,24 @@
       </table>
     </mat-card>
     <mat-card flex>
+      <h3>&nbsp;Current Cases</h3>
       <ngx-charts-pie-chart
         flex
-        legendTitle="Total Cases"
+        legendTitle="Cases"
         [view]="view"
-        [scheme]="colorScheme"
         [legend]=false
         [labels]=true
-        yAxisLabel='Cases/Million'
         [results]="totalCases"
+      >
+      </ngx-charts-pie-chart>
+      <h3>&nbsp;Current Cases Per Million</h3>
+      <ngx-charts-pie-chart
+        flex
+        legendTitle="Cases Per Million"
+        [view]="view"
+        [legend]=false
+        [labels]=true
+        [results]="totalCasesMillion"
       >
       </ngx-charts-pie-chart>
 
@@ -140,4 +134,22 @@
   </mat-card>
   </div>
 </div>
+<!--
+
+<div flex layout="row">
+  <mat-card>
+    <td-chart>
+      <td-chart-series td-map
+                       [name]="'England Cases'"
+                       [map]="'UK'"
+                       [data]="[
+                    {name: 'E0000001', value: 4822023}
+
+                  ]"
+                       [roam]="true"
+                       [itemStyle]="{ emphasis:{label:{show:true}}}">
+      </td-chart-series>
+    </td-chart>
+  </mat-card>
+</div> -->
 

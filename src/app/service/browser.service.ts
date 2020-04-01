@@ -10,6 +10,11 @@ export enum Formats {
     EprView = 'epr'
 }
 
+export interface Location {
+  code: string;
+  name: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,6 +23,10 @@ export class BrowserService {
 
     private resource: any;
 
+    private location : Location = {
+      code: 'E92000001',
+      name: 'England'
+    };
 
     private format: Formats = Formats.JsonFormatted;
 
@@ -26,6 +35,9 @@ export class BrowserService {
     private resourceChange: EventEmitter<any> = new EventEmitter();
     private rawResourceChange: EventEmitter<any> = new EventEmitter();
     private validationChange: EventEmitter<any> = new EventEmitter();
+
+
+    public locationChange: EventEmitter<Location> = new EventEmitter();
 
     constructor(private http: HttpClient) {
 
@@ -77,7 +89,14 @@ export class BrowserService {
         this.getRawResourceChangeEmitter().emit(this.rawResource);
     }
 
-
+  setLocation(location : Location) {
+      console.log(location);
+      this.location  = location;
+      this.locationChange.emit(location);
+  }
+    getLocation() {
+      return this.location;
+    }
 
 
 

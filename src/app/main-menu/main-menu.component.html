@@ -1,37 +1,26 @@
 <mat-menu #resourceMenu>
-  <button mat-menu-item routerLink="/editor">Editor</button>
-  <button mat-menu-item routerLink="/browse">Browse</button>
-  <button mat-menu-item routerLink="/validate">Validate</button>
+  <button mat-menu-item *ngFor="let location of locations" [value]="location" (click)="selected(location)">{{location.name}}</button>
 </mat-menu>
 
 <td-layout [class]="'theme-light'">
   <td-navigation-drawer flex sidenavTitle="Resources">
     <span flex></span>
-    <a mat-menu-item href="https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14" target="_blank">PHE COVID-19 Dashboard</a>
 
   </td-navigation-drawer>
   <td-layout-nav navigationRoute="/">
     <div td-toolbar-content layout="row" layout-align="start center" flex>
-      <button mat-icon-button td-menu-button tdLayoutToggle>
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span  class="cursor-pointer">COVID-19</span>
+
+      <span  class="cursor-pointer">COVID-19 Cases</span>
 
       <span flex></span>
-    </div>
-   <!--
+         <a mat-button matTooltip="Select Region" [matMenuTriggerFor]="resourceMenu" >
+       {{location.name}} <mat-icon>arrow_drop_down</mat-icon></a>
 
-    <div td-toolbar-content layout="row" layout-align="start center" flex>
-      <span flex></span>
-      <mat-menu #notificationsMenu="matMenu">
-        <td-menu>
-          <button mat-button color="accent" routerLink="/validate" td-menu-footer>
-            See Full Report
-          </button>
-        </td-menu>
-      </mat-menu>
+      <a mat-icon-button matTooltip="Public Health England Dashboard" href="https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14" target="_blank">
+        <mat-icon>account_balance</mat-icon></a>
+
     </div>
--->
+
     <router-outlet></router-outlet>
   </td-layout-nav>
 </td-layout>

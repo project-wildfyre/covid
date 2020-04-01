@@ -1,12 +1,14 @@
 import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
-import {BrowserService} from "../service/browser.service";
+import {BrowserService, Location} from "../service/browser.service";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
 import {TdLoadingService} from "@covalent/core/loading";
-import {IMeasureReportDataSource} from "../datasource/measure-report-data-source";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 
+//import ukjson from '../../assets/EnglandRed.json';
+
+//import * as echarts from 'echarts';
 
 export interface Case {
   name: string;
@@ -15,6 +17,7 @@ export interface Case {
   casespermillion: number;
   healthindex: number;
   depravityindex: number;
+  id : string;
 }
 
 @Component({
@@ -25,6 +28,12 @@ export interface Case {
 export class BodyComponent implements OnInit {
 
   totalCases: any[] =[
+    {
+      "name": "UK",
+      "value": 0
+    }
+  ];
+  totalCasesMillion: any[] =[
     {
       "name": "UK",
       "value": 0
@@ -46,7 +55,7 @@ export class BodyComponent implements OnInit {
     }
   ];
   // width - height
-  view: any[] = [500, 450];
+  view: any[] = [500, 350];
   aview: any[] = [700,200];
 
   // options
@@ -94,6 +103,7 @@ export class BodyComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  //  echarts.registerMap('UK', ukjson);
     var today = new Date() ;
     console.log('innerWidth initial = '+window.innerWidth);
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
@@ -106,6 +116,10 @@ export class BodyComponent implements OnInit {
     this.todayStr = yyyy+ '-' + mm + '-' + dd;
 
     this.populate('E92000001');
+    this.fhirService.locationChange.subscribe(location => {
+      this.populate(location.code);
+    });
+
   }
 
   onResize(event) {
@@ -154,7 +168,6 @@ export class BodyComponent implements OnInit {
 
   selected(event) {
  //   console.log(event);
-    this.populate(event.value);
   }
    processBundle(bundle: R4.IBundle) {
     if (bundle.entry !== undefined) {
@@ -193,6 +206,7 @@ export class BodyComponent implements OnInit {
     this.multiTotalCases =  [];
     this.multiCasesPerMillion = [];
     this.totalCases =[];
+    this.totalCasesMillion = [];
     this.caseTable = [];
     for (let entry of this.cases.entries()) {
       var entTot :any = {};
@@ -201,8 +215,11 @@ export class BodyComponent implements OnInit {
       entTot.series = [];
       entPer.name = entry[0];
       entPer.series = [];
+
       var reps : IMeasureReport[] = entry[1];
       for (const rep of reps) {
+          var ids = rep.identifier[0].value.split('-');
+          var id = ids[0];
           var valTot :any = {};
           var dat = rep.date.split('T');
 
@@ -233,14 +250,26 @@ export class BodyComponent implements OnInit {
             cases : valTot.value,
             casespermillion : valPer.value,
             healthindex : hi,
-            depravityindex :mdi
+            depravityindex :mdi,
+            id: id
           };
           this.caseTable.push(report);
           var tot = {
             name : rep.subject.display,
-            value : valTot.value
-          }
+            value : valTot.value,
+            extra : {
+              id : id
+            }
+          };
           this.totalCases.push(tot);
+          var totMillion = {
+            name : rep.subject.display,
+            value : valPer.value,
+            extra : {
+              id : id
+            }
+          };
+          this.totalCasesMillion.push(totMillion);
         }
       }
       this.multiTotalCases.push(entTot);
@@ -253,7 +282,15 @@ export class BodyComponent implements OnInit {
     this._loadingService.resolve('overlayStarSyntax');
   }
   onSelect(data): void {
-   // console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+    // console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+  }
+
+  onSelectAdv(event): void {
+    // Only drill into regions
+    if (event !== undefined && event.extra !== undefined && event.extra.id.startsWith('E12')) {
+      var location = {code: event.extra.id, name: event.name};
+      this.fhirService.setLocation(location);
+    }
   }
 
   onActivate(data): void {

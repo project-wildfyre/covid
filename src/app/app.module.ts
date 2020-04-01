@@ -48,6 +48,9 @@ import {NgxChartsModule} from "@swimlane/ngx-charts";
 import { HttpClientModule } from '@angular/common/http';
 import {MatTableModule} from "@angular/material/table";
 import {MatSortModule} from "@angular/material/sort";
+//import { CovalentBaseEchartsModule } from '@covalent/echarts/base';
+//import {CovalentMapEchartsModule} from "@covalent/echarts/map";
+
 
 
 @NgModule({
@@ -102,11 +105,11 @@ import {MatSortModule} from "@angular/material/sort";
         CovalentMenuModule,
         CovalentDataTableModule,
         CovalentMessageModule,
+   //   CovalentBaseEchartsModule,
+   //   CovalentMapEchartsModule,
 
         NgxGraphModule,
         NgxChartsModule,
-
-
 
 
     ],
