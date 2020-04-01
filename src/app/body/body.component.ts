@@ -83,7 +83,7 @@ export class BodyComponent implements OnInit {
 
   dataSource = new MatTableDataSource(this.caseTable);
 
-  displayedColumns = ['name', 'population','cases','casespermillion','healthindex', 'depravityindex','perhectare'];
+  displayedColumns = ['name', 'cases','casespermillion', 'population', 'healthindex',  'depravityindex','perhectare'];
 
   todayStr: string;
 
