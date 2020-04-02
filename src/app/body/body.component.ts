@@ -109,16 +109,7 @@ export class BodyComponent implements OnInit {
   }
   ngOnInit() {
 
-    var today = new Date() ;
 
-    this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
-    this.aview = [(window.innerWidth)*0.98, this.aview[1]];
-    today.setDate(today.getDate()-1);
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
-
-    this.todayStr = yyyy+ '-' + mm + '-' + dd;
 
     this.doSetup();
 
@@ -170,7 +161,7 @@ export class BodyComponent implements OnInit {
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
 
-    this.fhirService.get('/MeasureReport?measure=21263&reporter.partof.identifier='+region+'&_count=100&_sort=period&date=le'+this.todayStr).subscribe(
+    this.fhirService.get('/MeasureReport?measure=21263&reporter.partof.identifier='+region+'&_count=100&_sort:desc=period').subscribe(
       result => {
         const bundle = <R4.IBundle> result;
         this.processBundle(bundle);
@@ -203,6 +194,10 @@ export class BodyComponent implements OnInit {
       for (const entry of bundle.entry) {
         if (entry.resource.resourceType === 'MeasureReport') {
           const measure = <IMeasureReport> entry.resource;
+          if (this.todayStr === undefined) {
+            this.todayStr = measure.date.substring(0, measure.date.indexOf('T'));
+            console.log(this.todayStr);
+          }
           let ident = measure.identifier[0].value;
           let idents = ident.split('-');
           if (!this.cases.has(idents[0])) {
