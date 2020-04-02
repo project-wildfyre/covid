@@ -7,6 +7,8 @@ import {Case} from "../body/body.component";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
+import {subscribeOn} from "rxjs/operators";
+import {subscribeToResult} from "rxjs/internal-compatibility";
 
 
 export interface Nhs111 {
@@ -209,7 +211,7 @@ export class NhsOneoneoneComponent implements OnInit {
         var id = ids[0];
         var valTot :any = {};
         var dat = rep.date.split('T');
-        rep.reporter.display = rep.reporter.display.replace('NHS England ','');
+        rep.reporter.display = this.nameFix(rep.reporter.display);
         valTot.name = new Date(dat[0]);
         entSymptom.name = rep.reporter.display;
         entSuspected.name = rep.reporter.display;
@@ -270,6 +272,16 @@ export class NhsOneoneoneComponent implements OnInit {
     this._loadingService.resolve('overlayStarSyntax');
   }
 
+  nameFix( name: string): string {
+    name=name.replace('NHS England ','');
+    if (name.startsWith('NHS ')) {
+      name= name.substring(3,name.length);
+    }
+    if (name.indexOf('(')>0) {
+      name = name.substring(name.indexOf('(')+1).replace(')','');
+    }
+    return name;
+  }
   onSelectAdv(event): void {
     // Only drill into regions
     if (event !== undefined && event.extra !== undefined && !event.extra.id.startsWith('E38') ) {

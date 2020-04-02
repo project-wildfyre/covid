@@ -26,20 +26,20 @@ export class MainMenuComponent implements OnInit {
 
   public nhslocations: Location[] = [
     {code:'E40000000', name:'NHS England'},
-    {name:"South West (South West North)", code:"E39000043"},
-    {name:"South West (South West South)", code:"E39000044"},
-    {name:"Midlands (North Midlands)", code:"E39000032"},
-    {name:"North East and Yorkshire (Cumbria and North East)", code:"E39000047"},
-    {name:"East of England (East)", code:"E39000046"},
-    {name:"North West (Cheshire and Merseyside)", code:"E39000026"},
-    {name:"South East (Hampshire, Isle of Wight and Thames Valley)", code:"E39000041"},
-    {name:"North West (Lancashire and South Cumbria)", code:"E39000040"},
-    {name:"North East and Yorkshire (Yorkshire and Humber)", code:"E39000048"},
+    {name:"South West (North)", code:"E39000043"},
+    {name:"South West (South)", code:"E39000044"},
+    {name:"North Midlands", code:"E39000032"},
+    {name:"Cumbria and North East", code:"E39000047"},
+    {name:"East of England", code:"E39000046"},
+    {name:"Cheshire and Merseyside", code:"E39000026"},
+    {name:"Hampshire, Isle of Wight and Thames Valley", code:"E39000041"},
+    {name:"Lancashire and South Cumbria", code:"E39000040"},
+    {name:"Yorkshire and Humber", code:"E39000048"},
     {name:"London", code:"E39000018"},
-    {name:"South East (Kent, Surrey and Sussex)", code:"E39000042"},
-    {name:"Midlands (Central Midlands)", code:"E39000045"},
-    {name:"North West (Greater Manchester)", code:"E39000037"},
-    {name:"Midlands (West Midlands)", code:"E39000033"}];
+    {name:"Kent, Surrey and Sussex", code:"E39000042"},
+    {name:"Central Midlands", code:"E39000045"},
+    {name:"Greater Manchester", code:"E39000037"},
+    {name:"West Midlands", code:"E39000033"}];
 
   public location: Location = this.locations[0];
 
