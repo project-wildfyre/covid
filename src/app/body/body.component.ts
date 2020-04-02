@@ -109,7 +109,8 @@ export class BodyComponent implements OnInit {
   }
   ngOnInit() {
 
-
+    this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
+    this.aview = [(window.innerWidth)*0.98, this.aview[1]];
 
     this.doSetup();
 
