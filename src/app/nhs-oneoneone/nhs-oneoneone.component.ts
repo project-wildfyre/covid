@@ -3,17 +3,19 @@ import {MatTableDataSource} from "@angular/material/table";
 import {MatSort} from "@angular/material/sort";
 import {BrowserService} from "../service/browser.service";
 import {TdLoadingService} from "@covalent/core/loading";
-import {Case} from "../body/body.component";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
-import {subscribeOn} from "rxjs/operators";
-import {subscribeToResult} from "rxjs/internal-compatibility";
 
 
 export interface Nhs111 {
   name: string;
-  cases: number;
+  suspecttotal: number;
+  onlinetotal : number;
+  maletotal : number;
+  femaletotal : number;
+  maletotalonline : number;
+  femaletotalonline : number;
   id : string;
 }
 
@@ -78,7 +80,13 @@ export class NhsOneoneoneComponent implements OnInit {
 
   dataSource = new MatTableDataSource(this.caseTable);
 
-  displayedColumns = ['name', 'cases','casespermillion', 'population', 'healthindex',  'depravityindex','perkmsq', 'populationkmsq'];
+  displayedColumns = ['name',
+    'suspecttotal',
+    'onlinetotal',
+    'maletotal',
+    'femaletotal',
+    'maletotalonline',
+    'femaletotalonline'];
 
   todayStr: string;
 
@@ -224,6 +232,10 @@ export class NhsOneoneoneComponent implements OnInit {
         entSuspected.name = rep.reporter.display;
         var symptom = 0;
         var suspected = 0;
+        var femaletotal = 0;
+        var maletotal = 0;
+        var femaletotalonline = 0;
+        var maletotalonline = 0;
 
         for (const gp of rep.group) {
           if (gp.code.coding[0].code == '840544004') {
@@ -231,6 +243,18 @@ export class NhsOneoneoneComponent implements OnInit {
           }
           if (gp.code.coding[0].code == 'online-total') {
             symptom=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'female-total') {
+            femaletotal=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'female-total-online') {
+            femaletotalonline=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'male-total') {
+            maletotal=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'male-total-online') {
+            maletotalonline=gp.measureScore.value;
           }
         }
         var susday = {
@@ -267,13 +291,23 @@ export class NhsOneoneoneComponent implements OnInit {
             }
           };
           this.totalSymptoms.push(sym);
-
+          var nhs: Nhs111 = {
+            name: rep.reporter.display,
+            femaletotal: femaletotal,
+            maletotal: maletotal,
+            femaletotalonline: femaletotalonline,
+            maletotalonline: maletotalonline,
+            suspecttotal: suspected,
+            onlinetotal: symptom,
+            id : id
+          };
+          this.caseTable.push(nhs);
         }
       }
       this.dailySymptoms.push(entSymptom);
       this.dailySuspected.push(entSuspected);
     }
-    //console.log(JSON.stringify(this.totalSuspected));
+
     this.dataSource.data = this.caseTable;
     this.dataSource.sort = this.sort;
     this._loadingService.resolve('overlayStarSyntax');

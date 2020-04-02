@@ -162,7 +162,8 @@ export class BodyComponent implements OnInit {
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
 
-    this.fhirService.get('/MeasureReport?measure=21263&reporter.partof.identifier='+region+'&_count=100&_sort:desc=period').subscribe(
+    this.fhirService.get('/MeasureReport?measure=21263&reporter.partof.identifier='+region+'&_count=100&_sort:desc=period')
+      .subscribe(
       result => {
         const bundle = <R4.IBundle> result;
         this.processBundle(bundle);
@@ -173,18 +174,7 @@ export class BodyComponent implements OnInit {
 
   sortData(sort: Sort) {
 
-/*
-    this.sortedData = data.sort((a, b) => {
-      const isAsc = sort.direction === 'asc';
-      switch (sort.active) {
-        case 'name': return compare(a.name, b.name, isAsc);
-        case 'calories': return compare(a.calories, b.calories, isAsc);
-        case 'fat': return compare(a.fat, b.fat, isAsc);
-        case 'carbs': return compare(a.carbs, b.carbs, isAsc);
-        case 'protein': return compare(a.protein, b.protein, isAsc);
-        default: return 0;
-      }
-    });*/
+
   }
 
   selected(event) {

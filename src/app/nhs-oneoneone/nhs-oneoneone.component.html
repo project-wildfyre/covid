@@ -78,3 +78,52 @@
     </mat-card>
   </div>
 </div>
+<div flex layout="row">
+  <mat-card flex>
+    <table fxFill="100" mat-table matSort [dataSource]="dataSource" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header width="25% "> NHS Region </th>
+        <td mat-cell *matCellDef="let nhs">
+          <div style="word-wrap: break-word">
+            {{nhs.name}}
+          </div>
+        </td>
+      </ng-container>
+
+
+
+      <ng-container matColumnDef="femaletotalonline">
+      <th mat-header-cell  *matHeaderCellDef mat-sort-header> Online Female </th>
+      <td mat-cell *matCellDef="let nhs"> {{nhs.femaletotalonline}} </td>
+    </ng-container>
+      <ng-container matColumnDef="femaletotal">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> NHS 111 Female </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.femaletotal}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="maletotalonline">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> Online Male </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.maletotalonline}} </td>
+      </ng-container>
+      <ng-container matColumnDef="maletotal">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> NHS 111 male </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.maletotal}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="onlinetotal">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> NHS Online Triage </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.onlinetotal}} </td>
+      </ng-container>
+      <ng-container matColumnDef="suspecttotal">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> NHS Triage </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.suspecttotal}} </td>
+      </ng-container>
+
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card>
+
+</div>
