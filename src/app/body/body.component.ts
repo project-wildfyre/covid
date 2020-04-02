@@ -150,7 +150,7 @@ export class BodyComponent implements OnInit {
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
 
-    this.fhirService.get('/MeasureReport?reporter.partof.identifier='+region+'&_count=100&_sort=period&date=le'+this.todayStr).subscribe(
+    this.fhirService.get('/MeasureReport?measure=21263&reporter.partof.identifier='+region+'&_count=100&_sort=period&date=le'+this.todayStr).subscribe(
       result => {
         const bundle = <R4.IBundle> result;
         this.processBundle(bundle);
