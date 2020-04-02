@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {BrowserService, Location} from "../service/browser.service";
+import {Router} from "@angular/router";
+import {R4} from "@ahryman40k/ts-fhir-types";
+import {ILocation} from "@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_Location";
 
 @Component({
   selector: 'app-main-menu',
@@ -21,21 +24,58 @@ export class MainMenuComponent implements OnInit {
     {code:'E12000009', name:'South West'}
   ];
 
+  public nhslocations: Location[] = [
+    {code:'E40000000', name:'NHS England'},
+    {name:"South West (South West North)", code:"E39000043"},
+    {name:"South West (South West South)", code:"E39000044"},
+    {name:"Midlands (North Midlands)", code:"E39000032"},
+    {name:"North East and Yorkshire (Cumbria and North East)", code:"E39000047"},
+    {name:"East of England (East)", code:"E39000046"},
+    {name:"North West (Cheshire and Merseyside)", code:"E39000026"},
+    {name:"South East (Hampshire, Isle of Wight and Thames Valley)", code:"E39000041"},
+    {name:"North West (Lancashire and South Cumbria)", code:"E39000040"},
+    {name:"North East and Yorkshire (Yorkshire and Humber)", code:"E39000048"},
+    {name:"London", code:"E39000018"},
+    {name:"South East (Kent, Surrey and Sussex)", code:"E39000042"},
+    {name:"Midlands (Central Midlands)", code:"E39000045"},
+    {name:"North West (Greater Manchester)", code:"E39000037"},
+    {name:"Midlands (West Midlands)", code:"E39000033"}];
+
   public location: Location = this.locations[0];
 
-  constructor(private fhirService: BrowserService) { }
+  public nhslocation: Location = this.nhslocations[0];
+
+  public regionName = "";
+
+  constructor(private fhirService: BrowserService,
+              private router: Router) { }
 
   ngOnInit(): void {
     this.fhirService.locationChange.subscribe(location => {
       this.location = location;
+      this.fhirService.get("/Location?identifier="+location.code).subscribe(result => {
+        const bundle = <R4.IBundle> result;
+        for(const entry of bundle.entry) {
+          var fd: ILocation = <ILocation> entry.resource;
+            this.regionName= " - "+ fd.name;
+        }
+
+      })
     });
   }
 
   selected(location) {
     //console.log(event);
     if (location !== undefined) {
-      this.fhirService.setLocation(location);
+      this.router.navigate(['/phe',location.code]);
+
     }
   }
+  selectedNHS(location) {
+    //console.log(event);
+    if (location !== undefined) {
+      this.router.navigate(['/nhs111',location.code]);
 
+    }
+  }
 }

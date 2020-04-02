@@ -11,7 +11,9 @@ const routes: Routes = [
       { path: '', redirectTo: 'phe', pathMatch: 'full'},
       { path: 'main', redirectTo: 'phe', pathMatch: 'full'},
       { path: 'phe', component: BodyComponent},
-      { path: 'nhs111', component: NhsOneoneoneComponent}
+      { path: 'phe/:region', component: BodyComponent},
+      { path: 'nhs111', component: NhsOneoneoneComponent},
+      { path: 'nhs111/:nhsregion', component: NhsOneoneoneComponent}
     ]}
 ];
 

@@ -5,6 +5,15 @@ import {BrowserService} from "../service/browser.service";
 import {TdLoadingService} from "@covalent/core/loading";
 import {Case} from "../body/body.component";
 import {R4} from "@ahryman40k/ts-fhir-types";
+import {ActivatedRoute, Router} from "@angular/router";
+import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
+
+
+export interface Nhs111 {
+  name: string;
+  cases: number;
+  id : string;
+}
 
 @Component({
   selector: 'app-nhs-oneoneone',
@@ -13,6 +22,33 @@ import {R4} from "@ahryman40k/ts-fhir-types";
 })
 export class NhsOneoneoneComponent implements OnInit {
 
+  totalSymptoms : any[] =[
+    {
+      "name": "UK",
+      "value": 0
+    }
+  ];
+  totalSuspected: any[] =[
+    {
+      "name": "UK",
+      "value": 0
+    }
+  ];
+
+  dailySymptoms: any[] = [
+    {
+      "name": "Area",
+      "series": [
+      ]
+    }
+  ];
+  dailySuspected: any[] = [
+    {
+      "name": "Area",
+      "series": [
+      ]
+    }
+  ];
   view: any[] = [500, 350];
   aview: any[] = [700,200];
 
@@ -36,7 +72,7 @@ export class NhsOneoneoneComponent implements OnInit {
 
   // reports: IMeasureReport[] = [];
 
-  caseTable :Case[] = [];
+  caseTable :Nhs111[] = [];
 
   dataSource = new MatTableDataSource(this.caseTable);
 
@@ -53,31 +89,56 @@ export class NhsOneoneoneComponent implements OnInit {
   ashowLabels: boolean = true;
   isDoughnut: boolean = false;
 
+  currentRegion = undefined;
+
   @ViewChild(MatSort, {static: false}) sort: MatSort;
 
   constructor(private fhirService: BrowserService,
+              private route: ActivatedRoute,
+              private router: Router,
               private _loadingService: TdLoadingService) {
 
   }
 
 
-  ngOnInit(): void {
+  ngOnInit() {
+
     var today = new Date() ;
 
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
-    today.setDate(today.getDate()-1);
+    today.setDate(today.getDate()-2);
     var dd = String(today.getDate()).padStart(2, '0');
     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     var yyyy = today.getFullYear();
 
     this.todayStr = yyyy+ '-' + mm + '-' + dd;
+    console.log(this.todayStr);
+    this.doSetup();
 
-    this.populate('E40');
+    this.route.url.subscribe( url => {
+      this.doSetup();
+    });
+
+  }
+
+  doSetup(): void {
+    //  echarts.registerMap('UK', ukjson);
+
+    var tempid = this.route.snapshot.paramMap.get('nhsregion');
+    if (tempid==undefined) {
+      tempid= 'E40000000';
+    }
+    if (tempid !== this.currentRegion) {
+      this.currentRegion = tempid;
+      this.populate(tempid);
+
+    }
+
   }
 
   populate(region) {
-
+    this.fhirService.setLocation({ code : region, name: 'dummy'});
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
 
@@ -91,6 +152,138 @@ export class NhsOneoneoneComponent implements OnInit {
   }
 
   processBundle(bundle: R4.IBundle) {
+    if (bundle.entry !== undefined) {
+      for (const entry of bundle.entry) {
+        if (entry.resource.resourceType === 'MeasureReport') {
+          const measure = <IMeasureReport> entry.resource;
+          let ident = measure.identifier[0].value;
+          let idents = ident.split('-');
+          if (!this.cases.has(idents[0])) {
+            this.cases.set(idents[0],[]);
+          };
+          var map : IMeasureReport[] = this.cases.get(idents[0]);
+          map.push(measure);
+        }
+      }
+      var more : boolean = false;
+      if (bundle.link != undefined) {
+        for (const link of bundle.link) {
+          if (link.relation == 'next') {
+            more = true;
+            let split = link.url.split('_getpages=');
 
+            this.fhirService.get('?_getpages='+split[1]).subscribe(result => {
+              this.processBundle(<R4.IBundle> result);
+            })
+          }
+        }
+        if (!more) {
+          this.buildGraph();
+        }
+      }
+    } else {
+      // This may be empty
+      this.buildGraph();
+    }
+  }
+
+  buildGraph() {
+
+    this.totalSymptoms = [];
+    this.totalSuspected = [];
+    this.dailySuspected = [];
+    this.dailySymptoms = [];
+    this.caseTable = [];
+    for (let entry of this.cases.entries()) {
+      var entSymptom :any = {};
+      var entSuspected: any = {};
+
+      entSymptom.name = entry[0];
+      entSymptom.series = [];
+      entSuspected.name = entry[0];
+      entSuspected.series = [];
+
+      var reps : IMeasureReport[] = entry[1];
+      for (const rep of reps) {
+        var ids = rep.identifier[0].value.split('-');
+        var id = ids[0];
+        var valTot :any = {};
+        var dat = rep.date.split('T');
+        rep.reporter.display = rep.reporter.display.replace('NHS England ','');
+        valTot.name = new Date(dat[0]);
+        entSymptom.name = rep.reporter.display;
+        entSuspected.name = rep.reporter.display;
+        var symptom = 0;
+        var suspected = 0;
+
+        for (const gp of rep.group) {
+          if (gp.code.coding[0].code == '840544004') {
+            suspected=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'online-total') {
+            symptom=gp.measureScore.value;
+          }
+        }
+        var susday = {
+          name : new Date(dat[0]),
+          value : suspected,
+          extra : {
+            id : id
+          }
+        };
+        var symday = {
+          name : new Date(dat[0]),
+          value : symptom,
+          extra : {
+            id : id
+          }
+        };
+        entSuspected.series.push(susday);
+        entSymptom.series.push(symday);
+
+        if (rep.date.startsWith(this.todayStr)) {
+          var sus = {
+            name : rep.reporter.display,
+            value : suspected,
+            extra : {
+              id : id
+            }
+          };
+          this.totalSuspected.push(sus);
+          var sym = {
+            name : rep.reporter.display,
+            value : symptom,
+            extra : {
+              id : id
+            }
+          };
+          this.totalSymptoms.push(sym);
+
+        }
+      }
+      this.dailySymptoms.push(entSymptom);
+      this.dailySuspected.push(entSuspected);
+    }
+    //console.log(JSON.stringify(this.totalSuspected));
+    this.dataSource.data = this.caseTable;
+    this.dataSource.sort = this.sort;
+    this._loadingService.resolve('overlayStarSyntax');
+  }
+
+  onSelectAdv(event): void {
+    // Only drill into regions
+    if (event !== undefined && event.extra !== undefined && !event.extra.id.startsWith('E38') ) {
+      var location = {code: event.extra.id, name: event.name};
+
+      if (location !== undefined) {
+        this.router.navigate(['/nhs111',event.extra.id]);
+
+      }
+    }
+  }
+
+  onResize(event) {
+    this.aview = [(event.target.innerWidth)*0.98,  this.aview[1]];
+    this.view = [(event.target.innerWidth / 2)*0.97,  this.view[1]];
   }
 }

@@ -7,3 +7,74 @@
     </mat-card-content>
   </mat-card>
 </div>
+<div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
+  <div flex layout="row">
+    <mat-card flex>
+      <mat-card-header><h2>NHS 111 and 999 Triaged</h2></mat-card-header>
+      <mat-card-content>
+      <ngx-charts-advanced-pie-chart
+        (window:resize)="onResize($event)"
+        [view]="aview"
+        [scheme]="colorScheme"
+        [results]="totalSuspected"
+        [gradient]="agradient"
+        (select)="onSelectAdv($event)">
+      </ngx-charts-advanced-pie-chart>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div flex layout="row">
+    <mat-card flex>
+      <mat-card-header><h2>NHS 111 Website</h2></mat-card-header>
+      <mat-card-content>
+      <ngx-charts-advanced-pie-chart
+        [view]="aview"
+        [scheme]="colorScheme"
+        [results]="totalSymptoms"
+        [gradient]="agradient"
+        (select)="onSelectAdv($event)">
+      </ngx-charts-advanced-pie-chart>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  <div flex layout="row">
+
+
+    <mat-card flex>
+      <ngx-charts-line-chart
+        flex
+        [view]="view"
+         [legend]="legend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxis]="xAxis"
+        [yAxis]="yAxis"
+        [xAxisLabel]="xAxisLabel"
+        yAxisLabel='NHS 111 and 999 Triaged'
+        [timeline]="timeline"
+        [results]="dailySuspected"
+        (select)="onSelectAdv($event)">
+      >
+      </ngx-charts-line-chart>
+    </mat-card>
+    <mat-card flex>
+
+      <ngx-charts-line-chart
+        flex
+        [view]="view"
+        [legend]="legend"
+        [showXAxisLabel]="showXAxisLabel"
+        [showYAxisLabel]="showYAxisLabel"
+        [xAxis]="xAxis"
+        [yAxis]="yAxis"
+        [xAxisLabel]="xAxisLabel"
+        yAxisLabel='NHS 111 Website'
+        [timeline]="timeline"
+        [results]="dailySymptoms"
+        (select)="onSelectAdv($event)">
+      >
+      </ngx-charts-line-chart>
+
+    </mat-card>
+  </div>
+</div>

@@ -5,6 +5,7 @@ import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
 import {TdLoadingService} from "@covalent/core/loading";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
+import {ActivatedRoute, Router} from "@angular/router";
 
 //import ukjson from '../../assets/EnglandRed.json';
 
@@ -96,16 +97,18 @@ export class BodyComponent implements OnInit {
   ashowLegend: boolean = true;
   ashowLabels: boolean = true;
   isDoughnut: boolean = false;
+  currentRegion = undefined;
 
   @ViewChild(MatSort, {static: false}) sort: MatSort;
 
   constructor(private fhirService: BrowserService,
+              private route: ActivatedRoute,
+              private router: Router,
               private _loadingService: TdLoadingService) {
 
   }
+  ngOnInit() {
 
-  ngOnInit(): void {
-  //  echarts.registerMap('UK', ukjson);
     var today = new Date() ;
 
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
@@ -117,10 +120,27 @@ export class BodyComponent implements OnInit {
 
     this.todayStr = yyyy+ '-' + mm + '-' + dd;
 
-    this.populate('E92000001');
-    this.fhirService.locationChange.subscribe(location => {
-      this.populate(location.code);
+    this.doSetup();
+
+    this.route.url.subscribe( url => {
+      this.doSetup();
     });
+
+  }
+
+  doSetup(): void {
+  //  echarts.registerMap('UK', ukjson);
+
+    var tempid = this.route.snapshot.paramMap.get('region');
+    if (tempid==undefined) {
+      tempid= 'E92000001';
+    }
+    if (tempid !== this.currentRegion) {
+      this.currentRegion = tempid;
+      this.fhirService.setLocation({ code : tempid, name: 'dummy'});
+      this.populate(tempid);
+
+    }
 
   }
 
@@ -207,7 +227,10 @@ export class BodyComponent implements OnInit {
         if (!more) {
           this.buildGraph();
         }
-      }
+      } else {
+      // This may be empty
+      this.buildGraph();
+     }
     }
   }
 
@@ -313,7 +336,11 @@ export class BodyComponent implements OnInit {
     // Only drill into regions
     if (event !== undefined && event.extra !== undefined && event.extra.id.startsWith('E12')) {
       var location = {code: event.extra.id, name: event.name};
-      this.fhirService.setLocation(location);
+
+      if (location !== undefined) {
+        this.router.navigate(['/phe',event.extra.id]);
+
+      }
     }
   }
 

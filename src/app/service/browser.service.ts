@@ -90,7 +90,7 @@ export class BrowserService {
     }
 
   setLocation(location : Location) {
-      console.log(location);
+
       this.location  = location;
       this.locationChange.emit(location);
   }
