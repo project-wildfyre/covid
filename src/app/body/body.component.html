@@ -38,9 +38,8 @@
               yAxisLabel='Total Cases'
               [timeline]="timeline"
               [results]="multiTotalCases"
-              (select)="onSelect($event)"
-              (activate)="onActivate($event)"
-              (deactivate)="onDeactivate($event)"
+              (select)="onSelectAdv($event)"
+
             >
             </ngx-charts-line-chart>
   </mat-card>
@@ -58,9 +57,7 @@
                 yAxisLabel='Cases/Million'
                 [timeline]="timeline"
                 [results]="multiCasesPerMillion"
-                (select)="onSelect($event)"
-                (activate)="onActivate($event)"
-                (deactivate)="onDeactivate($event)"
+                (select)="onSelectAdv($event)"
               >
               </ngx-charts-line-chart>
 
