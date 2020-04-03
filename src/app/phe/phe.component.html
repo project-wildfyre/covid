@@ -1,15 +1,17 @@
-<div flex layout="row">
-  <mat-card flex>
+
+  <mat-card>
     <mat-card-content>
-      <td-message label="Info" sublabel="This data is sourced from Public Health England COVID-19 and Office for National Statistics [{{todayStr}}]" color="accent" icon="info"> </td-message>
+      <td-message label="Info" sublabel="This data is sourced from Public Health England COVID-19 and Office for National Statistics [Data for: {{todayStr}}]" color="accent" icon="info"> </td-message>
       <br>
-      For more information see <a href="https://www.gov.uk/government/publications/covid-19-track-coronavirus-cases">Public Health England - COVID-19: track coronavirus cases</a>
+      For more information see <a href="https://www.gov.uk/government/publications/covid-19-track-coronavirus-cases" target="_blank">Public Health England - COVID-19: track coronavirus cases</a>
     </mat-card-content>
   </mat-card>
-</div>
+
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
-  <div flex layout="row">
-    <mat-card flex>
+
+    <mat-card>
+      <mat-card-header><h3>COVID-19 Confirmed Summary</h3></mat-card-header>
+      <mat-card-content>
       <ngx-charts-advanced-pie-chart
 
         [view]="aview"
@@ -18,79 +20,86 @@
         [gradient]="agradient"
         (select)="onSelectAdv($event)">
       </ngx-charts-advanced-pie-chart>
+      </mat-card-content>
     </mat-card>
-  </div>
-  <div flex layout="row">
 
 
-<mat-card flex>
-            <ngx-charts-line-chart
-              flex
-              [view]="view"
-              (window:resize)="onResize($event)"
-
-              [legend]="legend"
-              [showXAxisLabel]="showXAxisLabel"
-              [showYAxisLabel]="showYAxisLabel"
-              [xAxis]="xAxis"
-              [yAxis]="yAxis"
-              [xAxisLabel]="xAxisLabel"
-              yAxisLabel='Total Cases'
-              [timeline]="timeline"
-              [results]="multiTotalCases"
-              (select)="onSelectAdv($event)"
-
-            >
-            </ngx-charts-line-chart>
-  </mat-card>
-    <mat-card flex>
-
-             <ngx-charts-line-chart
+  <mat-card>
+    <mat-card-header><h3>COVID-19 Confirmed Cases</h3></mat-card-header>
+    <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
+        <span>
+              <ngx-charts-line-chart
                 flex
                 [view]="view"
+                (window:resize)="onResize($event)"
+
                 [legend]="legend"
                 [showXAxisLabel]="showXAxisLabel"
                 [showYAxisLabel]="showYAxisLabel"
                 [xAxis]="xAxis"
                 [yAxis]="yAxis"
                 [xAxisLabel]="xAxisLabel"
-                yAxisLabel='Cases/Million'
+                yAxisLabel='Total Cases'
                 [timeline]="timeline"
-                [results]="multiCasesPerMillion"
+                [results]="multiTotalCases"
                 (select)="onSelectAdv($event)"
+
               >
               </ngx-charts-line-chart>
-
-    </mat-card>
-</div>
-
- <div flex layout="row">
-   <mat-card flex>
-
-       <h3>&nbsp;Current Cases</h3>
-       <ngx-charts-pie-chart
-         legendTitle="Cases"
-         [view]="view"
-         [legend]=false
-         [labels]=true
-         [results]="totalCases"
-       >
+        </span>
+        <span>
+  <ngx-charts-pie-chart
+    legendTitle="Cases"
+    [view]="view"
+    [legend]=false
+    [labels]=true
+    [results]="totalCases"
+  >
        </ngx-charts-pie-chart>
-   </mat-card>
-     <mat-card flex>
-     <h3>&nbsp;Current Cases Per Million</h3>
-     <ngx-charts-pie-chart
-       legendTitle="Cases Per Million"
-       [view]="view"
-       [legend]=false
-       [labels]=true
-       [results]="totalCasesMillion"
-     >
-     </ngx-charts-pie-chart>
+
+        </span>
+      </div>
+        </mat-card-content>
+      </mat-card>
+
+   <mat-card>
+     <mat-card-header><h3>COVID-19 Confirmed Cases Per Million</h3></mat-card-header>
+     <mat-card-content>
+        <div layout="row" layout-align="start center" flex>
+              <span>
+                  <ngx-charts-line-chart
+                    flex
+                    [view]="view"
+                    [legend]="legend"
+                    [showXAxisLabel]="showXAxisLabel"
+                    [showYAxisLabel]="showYAxisLabel"
+                    [xAxis]="xAxis"
+                    [yAxis]="yAxis"
+                    [xAxisLabel]="xAxisLabel"
+                    yAxisLabel='Cases/Million'
+                    [timeline]="timeline"
+                    [results]="multiCasesPerMillion"
+                    (select)="onSelectAdv($event)"
+                  >
+                      </ngx-charts-line-chart>
+
+              </span>
+          <span>
+           <ngx-charts-pie-chart
+             legendTitle="Cases Per Million"
+             [view]="view"
+             [legend]=legend
+             [labels]=true
+             [results]="totalCasesMillion"
+           >
+           </ngx-charts-pie-chart>
+          </span>
+        </div>
+       </mat-card-content>
      </mat-card>
- </div>
-  <div flex layout="row">
-    <mat-card flex>
+
+    <mat-card>
       <table fxFill="100" mat-table matSort [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
           <th mat-header-cell  *matHeaderCellDef mat-sort-header width="25% "> Area </th>
@@ -139,9 +148,6 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
     </mat-card>
-
-  </div>
-
 </div>
 <!--
 

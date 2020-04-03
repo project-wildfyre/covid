@@ -25,10 +25,10 @@ export interface Case {
 
 @Component({
   selector: 'app-body',
-  templateUrl: './body.component.html',
-  styleUrls: ['./body.component.scss']
+  templateUrl: './phe.component.html',
+  styleUrls: ['./phe.component.scss']
 })
-export class BodyComponent implements OnInit {
+export class PheComponent implements OnInit {
 
   totalCases: any[] =[
     {
@@ -111,7 +111,7 @@ export class BodyComponent implements OnInit {
 
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
-
+    this.legendCheck();
     this.doSetup();
 
     this.route.url.subscribe( url => {
@@ -139,6 +139,7 @@ export class BodyComponent implements OnInit {
   onResize(event) {
     this.aview = [(event.target.innerWidth)*0.98,  this.aview[1]];
     this.view = [(event.target.innerWidth / 2)*0.97,  this.view[1]];
+    this.legendCheck();
   }
 
   round(num) {
@@ -172,14 +173,15 @@ export class BodyComponent implements OnInit {
     );
   }
 
-  sortData(sort: Sort) {
-
-
+  legendCheck() {
+    if (this.view[0]> 500) {
+      this.legend = true;
+    } else {
+      this.legend = false;
+    }
   }
 
-  selected(event) {
 
-  }
    processBundle(bundle: R4.IBundle) {
     if (bundle.entry !== undefined) {
       for (const entry of bundle.entry) {
@@ -314,9 +316,7 @@ export class BodyComponent implements OnInit {
     this.dataSource.sort = this.sort;
     this._loadingService.resolve('overlayStarSyntax');
   }
-  onSelect(data): void {
 
-  }
 
   onSelectAdv(event): void {
     // Only drill into regions
@@ -328,14 +328,6 @@ export class BodyComponent implements OnInit {
 
       }
     }
-  }
-
-  onActivate(data): void {
-
-  }
-
-  onDeactivate(data): void {
-
   }
 
 

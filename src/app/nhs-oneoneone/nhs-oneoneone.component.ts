@@ -85,8 +85,10 @@ export class NhsOneoneoneComponent implements OnInit {
     'onlinetotal',
     'maletotal',
     'femaletotal',
+    'ratiototal',
     'maletotalonline',
-    'femaletotalonline'];
+    'femaletotalonline',
+    'ratiototalonline',];
 
   todayStr: string;
 
@@ -117,16 +119,7 @@ export class NhsOneoneoneComponent implements OnInit {
 
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
-    /*
-    today.setDate(today.getDate()-2);
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
-
-    this.todayStr = yyyy+ '-' + mm + '-' + dd;
-    console.log(this.todayStr);
-
-     */
+    this.legendCheck();
     this.doSetup();
 
     this.route.url.subscribe( url => {
@@ -338,5 +331,22 @@ export class NhsOneoneoneComponent implements OnInit {
   onResize(event) {
     this.aview = [(event.target.innerWidth)*0.98,  this.aview[1]];
     this.view = [(event.target.innerWidth / 2)*0.97,  this.view[1]];
+    this.legendCheck();
+  }
+  round(num) {
+    var no = this.pres(num,1);
+    if (no==0) return '';
+    return no;
+  }
+  legendCheck() {
+    if (this.view[0]> 500) {
+      this.legend = true;
+    } else {
+      this.legend = false;
+    }
+  }
+  pres(value, precision) {
+    var multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
   }
 }

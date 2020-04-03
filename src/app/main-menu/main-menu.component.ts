@@ -57,7 +57,7 @@ export class MainMenuComponent implements OnInit {
         const bundle = <R4.IBundle> result;
         for(const entry of bundle.entry) {
           var fd: ILocation = <ILocation> entry.resource;
-            this.regionName= " - "+ fd.name;
+            this.regionName= " - "+ this.nameFix(fd.name);
         }
 
       })
@@ -77,5 +77,15 @@ export class MainMenuComponent implements OnInit {
       this.router.navigate(['/nhs111',location.code]);
 
     }
+  }
+  nameFix( name: string): string {
+    name=name.replace('NHS England ','');
+    if (name.startsWith('NHS ')) {
+      name= name.substring(3,name.length);
+    }
+    if (name.indexOf('(')>0) {
+      name = name.substring(name.indexOf('(')+1).replace(')','');
+    }
+    return name;
   }
 }

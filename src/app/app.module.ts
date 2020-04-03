@@ -42,7 +42,7 @@ import {CovalentMenuModule} from "@covalent/core/menu";
 import {CovalentDataTableModule} from "@covalent/core/data-table";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import { MainMenuComponent } from './main-menu/main-menu.component';
-import { BodyComponent } from './body/body.component';
+import { PheComponent } from './phe/phe.component';
 import {NgxGraphModule} from "@swimlane/ngx-graph";
 import {NgxChartsModule} from "@swimlane/ngx-charts";
 import { HttpClientModule } from '@angular/common/http';
@@ -58,7 +58,7 @@ import { NhsOneoneoneComponent } from './nhs-oneoneone/nhs-oneoneone.component';
   declarations: [
     AppComponent,
     MainMenuComponent,
-    BodyComponent,
+    PheComponent,
     NhsOneoneoneComponent
   ],
     imports: [

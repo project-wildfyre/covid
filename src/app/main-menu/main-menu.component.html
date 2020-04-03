@@ -13,17 +13,13 @@
   <td-layout-nav navigationRoute="/">
     <div td-toolbar-content layout="row" layout-align="start center" flex>
 
-      <span  class="cursor-pointer">COVID-19 Cases {{regionName}}</span>
+      <span  class="cursor-pointer">COVID-19 {{regionName}}</span>
 
       <span flex></span>
          <a mat-button matTooltip="Select Government Region" [matMenuTriggerFor]="resourceMenu" >
        Gov Region <mat-icon>arrow_drop_down</mat-icon></a>
       <a mat-button matTooltip="Select NHS Region" [matMenuTriggerFor]="nhsMenu" >
        NHS Region <mat-icon>arrow_drop_down</mat-icon></a>
-
-      <a mat-icon-button matTooltip="Public Health England Dashboard" href="https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14" target="_blank">
-        <mat-icon>account_balance</mat-icon></a>
-
     </div>
 
     <router-outlet></router-outlet>

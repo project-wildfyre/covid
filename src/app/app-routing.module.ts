@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {MainMenuComponent} from "./main-menu/main-menu.component";
-import {BodyComponent} from "./body/body.component";
+import {PheComponent} from "./phe/phe.component";
 import {NhsOneoneoneComponent} from "./nhs-oneoneone/nhs-oneoneone.component";
 
 
@@ -10,8 +10,8 @@ const routes: Routes = [
     children : [
       { path: '', redirectTo: 'phe', pathMatch: 'full'},
       { path: 'main', redirectTo: 'phe', pathMatch: 'full'},
-      { path: 'phe', component: BodyComponent},
-      { path: 'phe/:region', component: BodyComponent},
+      { path: 'phe', component: PheComponent},
+      { path: 'phe/:region', component: PheComponent},
       { path: 'nhs111', component: NhsOneoneoneComponent},
       { path: 'nhs111/:nhsregion', component: NhsOneoneoneComponent}
     ]}
