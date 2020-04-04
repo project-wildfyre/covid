@@ -10,12 +10,15 @@ import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
 
 export interface Nhs111 {
   name: string;
-  suspecttotal: number;
+  triagetotal: number;
   onlinetotal : number;
   maletotal : number;
   femaletotal : number;
   maletotalonline : number;
   femaletotalonline : number;
+  population : number;
+  triagetotalpermillion: number;
+  onlinetotalpermillion : number;
   id : string;
 }
 
@@ -26,33 +29,49 @@ export interface Nhs111 {
 })
 export class NhsOneoneoneComponent implements OnInit {
 
-  totalSymptoms : any[] =[
+  totalOnline : any[] =[
     {
       "name": "UK",
       "value": 0
     }
   ];
-  totalSuspected: any[] =[
+  totalTriaged: any[] =[
     {
       "name": "UK",
       "value": 0
     }
   ];
 
-  dailySymptoms: any[] = [
+  totalOnlinePM : any[] =[
+    {
+      "name": "UK",
+      "value": 0
+    }
+  ];
+  totalTriagedPM: any[] =[
+    {
+      "name": "UK",
+      "value": 0
+    }
+  ];
+
+
+  dailyOnline: any[] = [
     {
       "name": "Area",
       "series": [
       ]
     }
   ];
-  dailySuspected: any[] = [
+  dailyTriaged: any[] = [
     {
       "name": "Area",
       "series": [
       ]
     }
   ];
+
+
   view: any[] = [500, 350];
   aview: any[] = [700,200];
 
@@ -81,13 +100,16 @@ export class NhsOneoneoneComponent implements OnInit {
   dataSource = new MatTableDataSource(this.caseTable);
 
   displayedColumns = ['name',
-    'suspecttotal',
+    'triagetotal',
     'onlinetotal',
-    'maletotal',
-    'femaletotal',
+    'triagetotalpermillion',
+    'onlinetotalpermillion',
+    'population',
+  //  'maletotal',
+ //   'femaletotal',
     'ratiototal',
-    'maletotalonline',
-    'femaletotalonline',
+   // 'maletotalonline',
+  //  'femaletotalonline',
     'ratiototalonline',];
 
   todayStr: string;
@@ -148,7 +170,7 @@ export class NhsOneoneoneComponent implements OnInit {
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
 
-    this.fhirService.get('/MeasureReport?measure=21264&reporter.partof.identifier='+region+'&_count=100&_sort:desc=period').subscribe(
+    this.fhirService.get('/MeasureReport?measure=21264&subject.partof.identifier='+region+'&_count=100&_sort:desc=period').subscribe(
       result => {
         const bundle = <R4.IBundle> result;
         this.processBundle(bundle);
@@ -199,19 +221,22 @@ export class NhsOneoneoneComponent implements OnInit {
 
   buildGraph() {
 
-    this.totalSymptoms = [];
-    this.totalSuspected = [];
-    this.dailySuspected = [];
-    this.dailySymptoms = [];
+    this.totalOnline = [];
+    this.totalTriaged = [];
+    this.dailyTriaged = [];
+    this.dailyOnline = [];
+    this.totalOnlinePM = [];
+    this.totalTriagedPM = [];
     this.caseTable = [];
     for (let entry of this.cases.entries()) {
-      var entSymptom :any = {};
-      var entSuspected: any = {};
+      var entOnline :any = {};
+      var entTriaged: any = {};
 
-      entSymptom.name = entry[0];
-      entSymptom.series = [];
-      entSuspected.name = entry[0];
-      entSuspected.series = [];
+
+      entOnline.name = entry[0];
+      entOnline.series = [];
+      entTriaged.name = entry[0];
+      entTriaged.series = [];
 
       var reps : IMeasureReport[] = entry[1];
       for (const rep of reps) {
@@ -219,23 +244,35 @@ export class NhsOneoneoneComponent implements OnInit {
         var id = ids[0];
         var valTot :any = {};
         var dat = rep.date.split('T');
-        rep.reporter.display = this.nameFix(rep.reporter.display);
+        rep.subject.display = this.nameFix(rep.subject.display);
         valTot.name = new Date(dat[0]);
-        entSymptom.name = rep.reporter.display;
-        entSuspected.name = rep.reporter.display;
+        entOnline.name = rep.subject.display;
+        entTriaged.name = rep.subject.display;
+
+
         var symptom = 0;
         var suspected = 0;
         var femaletotal = 0;
         var maletotal = 0;
         var femaletotalonline = 0;
         var maletotalonline = 0;
+        var pop= 0;
+        var symptompermillion = undefined;
+        var suspectedpermillion = undefined;
 
         for (const gp of rep.group) {
           if (gp.code.coding[0].code == '840544004') {
             suspected=gp.measureScore.value;
+            if (gp.population != undefined && gp.population.length>0) {
+              pop = gp.population[0].count;
+            }
           }
           if (gp.code.coding[0].code == 'online-total') {
             symptom=gp.measureScore.value;
+
+            if (gp.population != undefined && gp.population.length>0) {
+              pop = gp.population[0].count;
+            }
           }
           if (gp.code.coding[0].code == 'female-total') {
             femaletotal=gp.measureScore.value;
@@ -250,6 +287,12 @@ export class NhsOneoneoneComponent implements OnInit {
             maletotalonline=gp.measureScore.value;
           }
         }
+        if (pop > 0) {
+          suspectedpermillion = Math.round((suspected / pop) * 1000000);
+         // console.log(suspectedpermillion);
+          symptompermillion = Math.round((symptom / pop) * 1000000);
+        }
+
         var susday = {
           name : new Date(dat[0]),
           value : suspected,
@@ -264,41 +307,72 @@ export class NhsOneoneoneComponent implements OnInit {
             id : id
           }
         };
-        entSuspected.series.push(susday);
-        entSymptom.series.push(symday);
+
+        entTriaged.series.push(susday);
+        entOnline.series.push(symday);
 
         if (rep.date.startsWith(this.todayStr)) {
           var sus = {
-            name : rep.reporter.display,
+            name : rep.subject.display,
             value : suspected,
             extra : {
               id : id
             }
           };
-          this.totalSuspected.push(sus);
+          this.totalTriaged.push(sus);
           var sym = {
-            name : rep.reporter.display,
+            name : rep.subject.display,
             value : symptom,
             extra : {
               id : id
             }
           };
-          this.totalSymptoms.push(sym);
+          this.totalOnline.push(sym);
+
+          if (suspectedpermillion !== undefined) {
+            var susPM = {
+              name: rep.subject.display,
+              value: suspectedpermillion,
+              extra: {
+                id: id
+              }
+            };
+            this.totalTriagedPM.push(susPM);
+          }
+
+          if (symptompermillion !== undefined) {
+            var symPM = {
+              name: rep.subject.display,
+              value: symptompermillion,
+              extra: {
+                id: id
+              }
+            };
+            this.totalOnlinePM.push(symPM);
+          }
+
           var nhs: Nhs111 = {
-            name: rep.reporter.display,
+            name: rep.subject.display,
             femaletotal: femaletotal,
             maletotal: maletotal,
             femaletotalonline: femaletotalonline,
             maletotalonline: maletotalonline,
-            suspecttotal: suspected,
+            triagetotal: suspected,
             onlinetotal: symptom,
+            population: pop,
+            triagetotalpermillion: suspectedpermillion,
+            onlinetotalpermillion: symptompermillion,
             id : id
           };
+          if (pop == 0) {
+            console.log(rep.identifier[0].value);
+            console.log(rep);
+          }
           this.caseTable.push(nhs);
         }
       }
-      this.dailySymptoms.push(entSymptom);
-      this.dailySuspected.push(entSuspected);
+      this.dailyOnline.push(entOnline);
+      this.dailyTriaged.push(entTriaged);
     }
 
     this.dataSource.data = this.caseTable;
