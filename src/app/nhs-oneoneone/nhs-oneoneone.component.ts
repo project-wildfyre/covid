@@ -19,6 +19,8 @@ export interface Nhs111 {
   population : number;
   triagetotalpermillion: number;
   onlinetotalpermillion : number;
+  triagedayper: number;
+  onlinedayper : number;
   id : string;
 }
 
@@ -104,13 +106,16 @@ export class NhsOneoneoneComponent implements OnInit {
     'onlinetotal',
     'triagetotalpermillion',
     'onlinetotalpermillion',
+    'triagedayper',
+    'onlinedayper',
     'population',
   //  'maletotal',
  //   'femaletotal',
-    'ratiototal',
+   // 'ratiototal',
    // 'maletotalonline',
   //  'femaletotalonline',
-    'ratiototalonline',];
+  //  'ratiototalonline'
+  ];
 
   todayStr: string;
 
@@ -259,6 +264,10 @@ export class NhsOneoneoneComponent implements OnInit {
         var pop= 0;
         var symptompermillion = undefined;
         var suspectedpermillion = undefined;
+        var dayonline=0;
+        var daytriage=0;
+        var dayonlineper=undefined;
+        var daytriageper=undefined;
 
         for (const gp of rep.group) {
           if (gp.code.coding[0].code == '840544004') {
@@ -274,16 +283,22 @@ export class NhsOneoneoneComponent implements OnInit {
               pop = gp.population[0].count;
             }
           }
-          if (gp.code.coding[0].code == 'female-total') {
+          if (gp.code.coding[0].code == 'daily-triage') {
+            daytriage=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'daily-online') {
+            dayonline=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'female-triage-total') {
             femaletotal=gp.measureScore.value;
           }
-          if (gp.code.coding[0].code == 'female-total-online') {
+          if (gp.code.coding[0].code == 'femalel-online-total') {
             femaletotalonline=gp.measureScore.value;
           }
-          if (gp.code.coding[0].code == 'male-total') {
+          if (gp.code.coding[0].code == 'male-triage-total') {
             maletotal=gp.measureScore.value;
           }
-          if (gp.code.coding[0].code == 'male-total-online') {
+          if (gp.code.coding[0].code == 'male-online-total') {
             maletotalonline=gp.measureScore.value;
           }
         }
@@ -291,6 +306,8 @@ export class NhsOneoneoneComponent implements OnInit {
           suspectedpermillion = Math.round((suspected / pop) * 1000000);
          // console.log(suspectedpermillion);
           symptompermillion = Math.round((symptom / pop) * 1000000);
+          dayonlineper = Math.round((dayonline/pop) * 1000000);
+          daytriageper = Math.round((daytriage/pop) * 1000000);
         }
 
         var susday = {
@@ -362,6 +379,8 @@ export class NhsOneoneoneComponent implements OnInit {
             population: pop,
             triagetotalpermillion: suspectedpermillion,
             onlinetotalpermillion: symptompermillion,
+            onlinedayper: dayonlineper,
+            triagedayper: daytriageper,
             id : id
           };
           if (pop == 0) {

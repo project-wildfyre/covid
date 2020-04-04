@@ -1,18 +1,20 @@
 
   <mat-card>
     <mat-card-content>
-      <td-message label="Warning" sublabel="The information is off due to a NHS Organisatonal change on the 1st April. This is being investigated. 4/April/2020 11:50" color="warn" icon="error"> </td-message>
-
       <td-message label="Info" sublabel="This data is sourced from NHS Digital COVID-19  National Statistics [Data for: {{todayStr}}]" color="accent" icon="info"> </td-message>
       <br>
-      For more information see <a href="https://digital.nhs.uk/data-and-information/publications/statistical/mi-potential-covid-19-symptoms-reported-through-nhs-pathways-and-111-online/latest" target="_blank">NHS Digital Potential COVID-19 symptoms reported through NHS Pathways and 111 online</a>
+      For more information see <a href="https://digital.nhs.uk/data-and-information/publications/statistical/mi-potential-covid-19-symptoms-reported-through-nhs-pathways-and-111-online/latest" target="_blank">NHS Digital Potential COVID-19 symptoms reported through NHS Pathways and 111 online.</a>
+      <br><br>
+      <td-message label="Info" sublabel="CCG Boundary Changes 1st April.  A number of NHS organisations merged on the 1st April. Updates are being supplied with a mix of old and new organisations, which may cause oddities in the graphs and tables." color="accent" icon="info">
+      </td-message>
+
     </mat-card-content>
   </mat-card>
 
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
 
     <mat-card flex>
-      <mat-card-header><h3>COVID-19 Potential NHS 111 and 999 Triaged</h3></mat-card-header>
+      <mat-card-header><h3>COVID-19 Potential NHS 111/999 Triaged</h3></mat-card-header>
       <mat-card-content>
       <ngx-charts-advanced-pie-chart
         (window:resize)="onResize($event)"
@@ -26,7 +28,7 @@
     </mat-card>
 
     <mat-card flex>
-      <mat-card-header><h3> COVID-19 Potential NHS 111 Website</h3></mat-card-header>
+      <mat-card-header><h3> COVID-19 Potential NHS 111 Online</h3></mat-card-header>
       <mat-card-content>
       <ngx-charts-advanced-pie-chart
         [view]="aview"
@@ -39,10 +41,11 @@
     </mat-card>
 
     <mat-card>
-      <mat-card-header><h3>COVID 19 Potential NHS 111 Triage and Website</h3></mat-card-header>
+      <mat-card-header><h3>COVID 19 Potential NHS 111/999 Triage and NHS 111 Online</h3></mat-card-header>
       <mat-card-content>
         <div layout="row" layout-align="start center" flex>
         <span>
+
           <ngx-charts-line-chart
             flex
             [view]="view"
@@ -52,7 +55,7 @@
             [xAxis]="xAxis"
             [yAxis]="yAxis"
             [xAxisLabel]="xAxisLabel"
-            yAxisLabel='NHS 111 and 999 Triaged'
+            yAxisLabel='NHS 111/999 Triaged'
             [timeline]="timeline"
             [results]="dailyTriaged"
             (select)="onSelectAdv($event)">
@@ -70,7 +73,7 @@
             [xAxis]="xAxis"
             [yAxis]="yAxis"
             [xAxisLabel]="xAxisLabel"
-            yAxisLabel='NHS 111 Website'
+            yAxisLabel='NHS 111 Online'
             [timeline]="timeline"
             [results]="dailyOnline"
             (select)="onSelectAdv($event)">
@@ -81,10 +84,11 @@
     </mat-card-content>
     </mat-card>
   <mat-card>
-    <mat-card-header><h3>COVID 19 Potential NHS 111 Triage and Website Per Million</h3></mat-card-header>
+    <mat-card-header><h3>COVID 19 Potential NHS 111/999 Triage and NHS 111 Online Per Million</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
         <span>
+            <h4>NHS Triaged Per Million</h4>
            <ngx-charts-pie-chart
              legendTitle="Cases"
              [view]="view"
@@ -94,7 +98,7 @@
            >
        </ngx-charts-pie-chart>
         </span>
-        <span>
+        <span>  <h4>NHS 111 Online Per Million</h4>
              <ngx-charts-pie-chart
                legendTitle="Cases"
                [view]="view"
@@ -168,6 +172,14 @@
       <ng-container matColumnDef="triagetotalpermillion">
         <th mat-header-cell  *matHeaderCellDef mat-sort-header> NHS Triage / Million  </th>
         <td mat-cell *matCellDef="let nhs"> {{nhs.triagetotalpermillion}} </td>
+      </ng-container>
+      <ng-container matColumnDef="triagedayper">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> Dalily NHS Triage / Million  </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.triagedayper}} </td>
+      </ng-container>
+      <ng-container matColumnDef="onlinedayper">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> Daily Online / Million  </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.onlinedayper}} </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
