@@ -30,6 +30,7 @@
     "@material/theme": "^5.1.0",
     "@swimlane/ngx-charts": "^13.0.2",
     "@swimlane/ngx-graph": "^6.2.0",
+    "d3": "^5.15.1",
     "echarts": "^4.7.0",
     "geojson-precision": "^1.0.0",
     "rxjs": "~6.5.4",

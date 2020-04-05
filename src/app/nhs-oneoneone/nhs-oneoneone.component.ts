@@ -6,7 +6,7 @@ import {TdLoadingService} from "@covalent/core/loading";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
-
+import * as shape from 'd3-shape';
 
 export interface Nhs111 {
   name: string;
@@ -30,6 +30,9 @@ export interface Nhs111 {
   styleUrls: ['./nhs-oneoneone.component.scss']
 })
 export class NhsOneoneoneComponent implements OnInit {
+
+
+  curve: any = shape.curveBasis;
 
   totalOnline : any[] =[
     {
@@ -65,12 +68,23 @@ export class NhsOneoneoneComponent implements OnInit {
       ]
     }
   ];
+
+  dailyOnlineReference: any [] = [{
+    "name": "UK",
+    "value": 0
+  }
+];
   dailyTriaged: any[] = [
     {
       "name": "Area",
       "series": [
       ]
     }
+  ];
+  dailyTriageReference: any [] = [{
+    "name": "UK",
+    "value": 0
+  }
   ];
 
 
@@ -308,25 +322,26 @@ export class NhsOneoneoneComponent implements OnInit {
           symptompermillion = Math.round((symptom / pop) * 1000000);
           dayonlineper = Math.round((dayonline/pop) * 1000000);
           daytriageper = Math.round((daytriage/pop) * 1000000);
+
+
+          var dayTriage = {
+            name : new Date(dat[0]),
+            value : daytriageper,
+            extra : {
+              id : id
+            }
+          };
+          var dayOnline = {
+            name : new Date(dat[0]),
+            value : dayonlineper,
+            extra : {
+              id : id
+            }
+          };
+
+          entTriaged.series.push(dayTriage);
+          entOnline.series.push(dayOnline);
         }
-
-        var susday = {
-          name : new Date(dat[0]),
-          value : suspected,
-          extra : {
-            id : id
-          }
-        };
-        var symday = {
-          name : new Date(dat[0]),
-          value : symptom,
-          extra : {
-            id : id
-          }
-        };
-
-        entTriaged.series.push(susday);
-        entOnline.series.push(symday);
 
         if (rep.date.startsWith(this.todayStr)) {
           var sus = {
@@ -393,6 +408,39 @@ export class NhsOneoneoneComponent implements OnInit {
       this.dailyOnline.push(entOnline);
       this.dailyTriaged.push(entTriaged);
     }
+
+
+
+
+    var total = 0;
+    var cnt = 0;
+    for(var ref of this.dailyOnline) {
+      for(var series of ref.series) {
+        cnt++;
+        total += series.value;
+      }
+    }
+    this.dailyOnlineReference = [];
+    this.dailyOnlineReference.push({
+      name : 'Average',
+      value : total/cnt
+    });
+
+    total = 0;
+    cnt = 0;
+    for(var ref of this.dailyTriaged) {
+      for(var series of ref.series) {
+        cnt++;
+        total += series.value;
+      }
+    }
+    this.dailyTriageReference = [];
+    this.dailyTriageReference.push({
+      name : 'Average',
+      value : total/cnt
+    });
+
+
 
     this.dataSource.data = this.caseTable;
     this.dataSource.sort = this.sort;

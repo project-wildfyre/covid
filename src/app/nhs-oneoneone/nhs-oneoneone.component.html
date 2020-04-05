@@ -4,17 +4,17 @@
       <td-message label="Info" sublabel="This data is sourced from NHS Digital COVID-19  National Statistics [Data for: {{todayStr}}]" color="accent" icon="info"> </td-message>
       <br>
       For more information see <a href="https://digital.nhs.uk/data-and-information/publications/statistical/mi-potential-covid-19-symptoms-reported-through-nhs-pathways-and-111-online/latest" target="_blank">NHS Digital Potential COVID-19 symptoms reported through NHS Pathways and 111 online.</a>
-      <br><br>
+    <!--  <br><br>
       <td-message label="Info" sublabel="CCG Boundary Changes 1st April.  A number of NHS organisations merged on the 1st April. Updates are being supplied with a mix of old and new organisations, which may cause oddities in the graphs and tables." color="accent" icon="info">
       </td-message>
-
+-->
     </mat-card-content>
   </mat-card>
 
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
 
     <mat-card flex>
-      <mat-card-header><h3>COVID-19 Potential NHS 111/999 Triaged</h3></mat-card-header>
+      <mat-card-header><h3>NHS 111/999 Triaged</h3></mat-card-header>
       <mat-card-content>
       <ngx-charts-advanced-pie-chart
         (window:resize)="onResize($event)"
@@ -28,7 +28,7 @@
     </mat-card>
 
     <mat-card flex>
-      <mat-card-header><h3> COVID-19 Potential NHS 111 Online</h3></mat-card-header>
+      <mat-card-header><h3>NHS 111 Online</h3></mat-card-header>
       <mat-card-content>
       <ngx-charts-advanced-pie-chart
         [view]="aview"
@@ -41,7 +41,7 @@
     </mat-card>
 
     <mat-card>
-      <mat-card-header><h3>COVID 19 Potential NHS 111/999 Triage and NHS 111 Online</h3></mat-card-header>
+      <mat-card-header><h3>Daily Trend (Per Million)</h3></mat-card-header>
       <mat-card-content>
         <div layout="row" layout-align="start center" flex>
         <span>
@@ -55,9 +55,12 @@
             [xAxis]="xAxis"
             [yAxis]="yAxis"
             [xAxisLabel]="xAxisLabel"
-            yAxisLabel='NHS 111/999 Triaged'
+            yAxisLabel='Triaged Per Million'
             [timeline]="timeline"
             [results]="dailyTriaged"
+            showRefLines="true"
+            [curve]="curve"
+            [referenceLines]="dailyTriageReference"
             (select)="onSelectAdv($event)">
           >
           </ngx-charts-line-chart>
@@ -73,9 +76,12 @@
             [xAxis]="xAxis"
             [yAxis]="yAxis"
             [xAxisLabel]="xAxisLabel"
-            yAxisLabel='NHS 111 Online'
+            yAxisLabel='Online Per Million'
             [timeline]="timeline"
             [results]="dailyOnline"
+            [curve]="curve"
+            [referenceLines]="dailyOnlineReference"
+            showRefLines="false"
             (select)="onSelectAdv($event)">
           >
           </ngx-charts-line-chart>
@@ -84,7 +90,7 @@
     </mat-card-content>
     </mat-card>
   <mat-card>
-    <mat-card-header><h3>COVID 19 Potential NHS 111/999 Triage and NHS 111 Online Per Million</h3></mat-card-header>
+    <mat-card-header><h3>Totals (Per Million)</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
         <span>

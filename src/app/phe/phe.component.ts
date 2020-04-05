@@ -6,6 +6,7 @@ import {TdLoadingService} from "@covalent/core/loading";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {ActivatedRoute, Router} from "@angular/router";
+import * as shape from 'd3-shape';
 
 //import ukjson from '../../assets/EnglandRed.json';
 
@@ -42,7 +43,14 @@ export class PheComponent implements OnInit {
       "value": 0
     }
   ];
-  multiCasesPerMillion: any[] = [
+  casesPerMillion: any[] = [
+    {
+      "name": "Area",
+      "series": [
+      ]
+    }
+  ];
+  dailyChangePerMillion: any[] = [
     {
       "name": "Area",
       "series": [
@@ -59,7 +67,11 @@ export class PheComponent implements OnInit {
   ];
   // width - height
   view: any[] = [500, 350];
+  bview: any[] = [500, 500];
   aview: any[] = [700,200];
+
+
+  curve: any = shape.curveBasis;
 
   // options
   legend: boolean = true;
@@ -110,6 +122,7 @@ export class PheComponent implements OnInit {
   ngOnInit() {
 
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
+    this.bview = [(window.innerWidth)*0.96, this.bview[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
     this.legendCheck();
     this.doSetup();
@@ -138,6 +151,7 @@ export class PheComponent implements OnInit {
 
   onResize(event) {
     this.aview = [(event.target.innerWidth)*0.98,  this.aview[1]];
+    this.bview = [(event.target.innerWidth)*0.96,  this.bview[1]];
     this.view = [(event.target.innerWidth / 2)*0.97,  this.view[1]];
     this.legendCheck();
   }
@@ -158,12 +172,17 @@ export class PheComponent implements OnInit {
     return Math.round(value * multiplier) / multiplier;
   }
   populate(region ) {
-    this.multiCasesPerMillion = [];
+    this.casesPerMillion = [];
     this.multiTotalCases = [];
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
 
-    this.fhirService.get('/MeasureReport?measure=21263&reporter.partof.identifier='+region+'&_count=100&_sort:desc=period')
+    var todayStr = yyyy +'-'+mm + '-' + dd+'T00:00:00+01:00';
+    this.fhirService.get('/MeasureReport?measure=21263&reporter.partof.identifier='+region+'&_count=100&_sort:desc=period&date=lt'+todayStr)
       .subscribe(
       result => {
         const bundle = <R4.IBundle> result;
@@ -197,7 +216,9 @@ export class PheComponent implements OnInit {
             this.cases.set(idents[0],[]);
           };
           var map : IMeasureReport[] = this.cases.get(idents[0]);
+
           map.push(measure);
+
         }
       }
       var more : boolean = false;
@@ -224,7 +245,7 @@ export class PheComponent implements OnInit {
 
   buildGraph() {
     this.multiTotalCases =  [];
-    this.multiCasesPerMillion = [];
+    this.casesPerMillion = [];
     this.totalCases =[];
     this.totalCasesMillion = [];
     this.caseTable = [];
@@ -308,10 +329,29 @@ export class PheComponent implements OnInit {
         }
       }
       this.multiTotalCases.push(entTot);
-      this.multiCasesPerMillion.push(entPer);
+      this.casesPerMillion.push(entPer);
 
     }
-   // this.dataSource = new IMeasureReportDataSource(this.reports, this.sort);
+    this.dailyChangePerMillion = [];
+    for(var ser of this.casesPerMillion) {
+      console.log(ser.name);
+      var dailyEntry: any = {
+        name : ser.name,
+        series: []
+      };
+      var lastCase = 0;
+      ser.series.slice().reverse().forEach(function(entry) {
+        //console.log(entry.value + ' Change = '  + (entry.value - lastCase));
+        var change: number = (entry.value - lastCase);
+        dailyEntry.series.push({
+          name: entry.name,
+          value: change
+        });
+        lastCase = entry.value;
+      });
+      this.dailyChangePerMillion.push(dailyEntry);
+    }
+
     this.dataSource.data = this.caseTable;
     this.dataSource.sort = this.sort;
     this._loadingService.resolve('overlayStarSyntax');
