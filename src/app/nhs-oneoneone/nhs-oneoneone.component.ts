@@ -23,6 +23,7 @@ export interface Nhs111 {
   triagedayper: number;
   onlinedayper : number;
   nhsCost: number;
+  riskFactor: number;
   id : string;
 }
 
@@ -125,7 +126,9 @@ export class NhsOneoneoneComponent implements OnInit {
     'triagedayper',
     'onlinedayper',
     'population',
-    'nhsCost'
+    'nhsCost',
+    'riskFactor'
+
    //  'maletotal',
  //   'femaletotal',
    // 'ratiototal',
@@ -286,6 +289,7 @@ export class NhsOneoneoneComponent implements OnInit {
         var dayonlineper=undefined;
         var daytriageper=undefined;
         var nhsCost = undefined;
+        var riskFactor = undefined;
 
         for (const gp of rep.group) {
           if (gp.code.coding[0].code == '840544004') {
@@ -321,6 +325,9 @@ export class NhsOneoneoneComponent implements OnInit {
           }
           if (gp.code.coding[0].code == 'nhs-cost') {
             nhsCost=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'risk-factor') {
+            riskFactor=gp.measureScore.value;
           }
         }
         if (pop > 0) {
@@ -404,6 +411,7 @@ export class NhsOneoneoneComponent implements OnInit {
             onlinedayper: dayonlineper,
             triagedayper: daytriageper,
             nhsCost: nhsCost,
+            riskFactor: (riskFactor*1000),
             id : id
           };
           if (pop == 0) {
