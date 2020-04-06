@@ -22,6 +22,7 @@ export interface Nhs111 {
   onlinetotalpermillion : number;
   triagedayper: number;
   onlinedayper : number;
+  nhsCost: number;
   id : string;
 }
 
@@ -124,7 +125,8 @@ export class NhsOneoneoneComponent implements OnInit {
     'triagedayper',
     'onlinedayper',
     'population',
-  //  'maletotal',
+    'nhsCost'
+   //  'maletotal',
  //   'femaletotal',
    // 'ratiototal',
    // 'maletotalonline',
@@ -283,6 +285,7 @@ export class NhsOneoneoneComponent implements OnInit {
         var daytriage=0;
         var dayonlineper=undefined;
         var daytriageper=undefined;
+        var nhsCost = undefined;
 
         for (const gp of rep.group) {
           if (gp.code.coding[0].code == '840544004') {
@@ -315,6 +318,9 @@ export class NhsOneoneoneComponent implements OnInit {
           }
           if (gp.code.coding[0].code == 'male-online-total') {
             maletotalonline=gp.measureScore.value;
+          }
+          if (gp.code.coding[0].code == 'nhs-cost') {
+            nhsCost=gp.measureScore.value;
           }
         }
         if (pop > 0) {
@@ -397,6 +403,7 @@ export class NhsOneoneoneComponent implements OnInit {
             onlinetotalpermillion: symptompermillion,
             onlinedayper: dayonlineper,
             triagedayper: daytriageper,
+            nhsCost: nhsCost,
             id : id
           };
           if (pop == 0) {

@@ -151,7 +151,10 @@
         <th mat-header-cell  *matHeaderCellDef> 111 Online Male % </th>
         <td mat-cell *matCellDef="let nhs"> {{round(nhs.maletotalonline*100/(nhs.femaletotalonline+nhs.maletotalonline))}}% </td>
       </ng-container>
-
+      <ng-container matColumnDef="nhsCost">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header=""> Beta Estimate </th>
+        <td mat-cell *matCellDef="let nhs"> {{round(nhs.nhsCost)}} </td>
+      </ng-container>
 
       <ng-container matColumnDef="triagetotal">
         <th mat-header-cell  *matHeaderCellDef mat-sort-header> NHS Pathways </th>
