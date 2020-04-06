@@ -4,6 +4,15 @@
 <mat-menu #nhsMenu>
   <button mat-menu-item *ngFor="let location of nhslocations"  [value]="nhslocation" (click)="selectedNHS(location)">{{location.name}}</button>
 </mat-menu>
+<mat-menu #otherMenu>
+  <a mat-menu-item href="https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14" target="_blank">
+    UK COVID-19 Cases (PHE)
+  </a>
+  <a mat-menu-item href="https://app.powerbi.com/view?r=eyJrIjoiNzhiNTlhZmUtYmI1Zi00NWU1LTgzNWUtNGViZTExNzlhMGFkIiwidCI6IjUwZjYwNzFmLWJiZmUtNDAxYS04ODAzLTY3Mzc0OGU2MjllMiIsImMiOjh9" target="_blank">
+    NHS Pathways Coronavirus (COVID-19)
+  </a>
+  <a mat-menu-item href="https://covid.joinzoe.com/data" target="_blank">COVID 19 Symptom Checker</a>
+</mat-menu>
 
 <td-layout [class]="'theme-light'">
   <td-navigation-drawer flex sidenavTitle="Resources">
@@ -17,9 +26,11 @@
 
       <span flex></span>
          <a mat-button matTooltip="Select Government Region" [matMenuTriggerFor]="resourceMenu" >
-       Cases (ONS) <mat-icon>arrow_drop_down</mat-icon></a>
-      <a mat-button matTooltip="Select NHS 111 Area" [matMenuTriggerFor]="nhsMenu" >
-       NHS 111 <mat-icon>arrow_drop_down</mat-icon></a>
+       Cases (PHE) <mat-icon>arrow_drop_down</mat-icon></a>
+      <a mat-button matTooltip="Select NHS Area" [matMenuTriggerFor]="nhsMenu" >
+       NHS Pathways <mat-icon>arrow_drop_down</mat-icon></a>
+      <a mat-button matTooltip="Other UK COVID Sites" [matMenuTriggerFor]="otherMenu" >
+        <mat-icon>dashboard</mat-icon></a>
     </div>
 
     <router-outlet></router-outlet>

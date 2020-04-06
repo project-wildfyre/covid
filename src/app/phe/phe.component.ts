@@ -7,6 +7,7 @@ import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {ActivatedRoute, Router} from "@angular/router";
 import * as shape from 'd3-shape';
+import {std} from "mathjs";
 
 //import ukjson from '../../assets/EnglandRed.json';
 
@@ -50,6 +51,7 @@ export class PheComponent implements OnInit {
       ]
     }
   ];
+  dailyChangeReference: any[];
   dailyChangePerMillion: any[] = [
     {
       "name": "Area",
@@ -176,13 +178,12 @@ export class PheComponent implements OnInit {
     this.multiTotalCases = [];
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
 
-    var todayStr = yyyy +'-'+mm + '-' + dd+'T00:00:00+01:00';
-    this.fhirService.get('/MeasureReport?measure=21263&reporter.partof.identifier='+region+'&_count=100&_sort:desc=period&date=lt'+todayStr)
+    this.fhirService.get('/MeasureReport?measure=21263'+
+      '&reporter.partof.identifier='+region+
+      '&_count=100'+
+      '&_sort:desc=period'+
+      '&date=gt2020-03-20')
       .subscribe(
       result => {
         const bundle = <R4.IBundle> result;
@@ -334,23 +335,63 @@ export class PheComponent implements OnInit {
     }
     this.dailyChangePerMillion = [];
     for(var ser of this.casesPerMillion) {
-      console.log(ser.name);
+
       var dailyEntry: any = {
         name : ser.name,
         series: []
       };
       var lastCase = 0;
+      var first : boolean =true;
       ser.series.slice().reverse().forEach(function(entry) {
-        //console.log(entry.value + ' Change = '  + (entry.value - lastCase));
+
         var change: number = (entry.value - lastCase);
-        dailyEntry.series.push({
-          name: entry.name,
-          value: change
-        });
+        if (!first) {
+          dailyEntry.series.push({
+            name: entry.name,
+            value: change
+          });
+        }
+        first = false;
         lastCase = entry.value;
       });
       this.dailyChangePerMillion.push(dailyEntry);
     }
+    var total = 0;
+    var cnt = 0;
+    var avg: number[] =[];
+
+    this.dailyChangeReference = [];
+    total = 0;
+    cnt = 0;
+    avg =[];
+    for(var ref of this.dailyChangePerMillion) {
+      var seriestotal: number = 0;
+      var count: number =0;
+      for(var series of ref.series) {
+        cnt++;
+        count++;
+        total += series.value;
+        seriestotal += series.value;
+      }
+      if (count>0) {
+        avg.push(seriestotal/count);
+      }
+    }
+    var stdv = std(avg);
+    this.dailyChangeReference = [];
+    this.dailyChangeReference.push({
+      name : '0',
+      value : total/cnt
+    });
+    this.dailyChangeReference.push({
+      name : '+',
+      value : (total/cnt)+stdv
+    });
+    this.dailyChangeReference.push({
+      name : '-',
+      value : (total/cnt)-stdv
+    });
+
 
     this.dataSource.data = this.caseTable;
     this.dataSource.sort = this.sort;

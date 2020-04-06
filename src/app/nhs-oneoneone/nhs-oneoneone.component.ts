@@ -7,6 +7,7 @@ import {R4} from "@ahryman40k/ts-fhir-types";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
 import * as shape from 'd3-shape';
+import { std } from 'mathjs';
 
 export interface Nhs111 {
   name: string;
@@ -414,30 +415,67 @@ export class NhsOneoneoneComponent implements OnInit {
 
     var total = 0;
     var cnt = 0;
+    var avg: number[] =[];
+
     for(var ref of this.dailyOnline) {
+      var seriestotal: number = 0;
+      var count: number =0;
       for(var series of ref.series) {
         cnt++;
+        count++;
         total += series.value;
+        seriestotal += series.value;
+      }
+      if (count>0) {
+        avg.push(seriestotal/count);
       }
     }
+
+    var stdv = std(avg);
     this.dailyOnlineReference = [];
+    /* 6th April disable stats on online. Trend is downwards
     this.dailyOnlineReference.push({
       name : 'Average',
       value : total/cnt
     });
-
+    this.dailyOnlineReference.push({
+      name : '+',
+      value : (total/cnt) + stdv
+    });
+    this.dailyOnlineReference.push({
+      name : '-',
+      value : (total/cnt) - stdv
+    });
+*/
     total = 0;
     cnt = 0;
+    avg =[];
     for(var ref of this.dailyTriaged) {
+      var seriestotal: number = 0;
+      var count: number =0;
       for(var series of ref.series) {
         cnt++;
+        count++;
         total += series.value;
+        seriestotal += series.value;
+      }
+      if (count>0) {
+        avg.push(seriestotal/count);
       }
     }
+    stdv = std(avg);
     this.dailyTriageReference = [];
     this.dailyTriageReference.push({
-      name : 'Average',
+      name : '0',
       value : total/cnt
+    });
+    this.dailyTriageReference.push({
+      name : '+',
+      value : (total/cnt)+stdv
+    });
+    this.dailyTriageReference.push({
+      name : '-',
+      value : (total/cnt)-stdv
     });
 
 

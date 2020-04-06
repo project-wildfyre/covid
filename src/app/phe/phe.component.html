@@ -1,9 +1,7 @@
 
   <mat-card>
     <mat-card-content>
-      <td-message label="Info" sublabel="This data is sourced from Public Health England COVID-19 and Office for National Statistics [Data for: {{todayStr}}]" color="accent" icon="info"> </td-message>
-      <br>
-      For more information see <a href="https://www.gov.uk/government/publications/covid-19-track-coronavirus-cases" target="_blank">Public Health England - COVID-19: track coronavirus cases</a>
+      <td-message label="Info" sublabel="This data is sourced from Public Health England COVID-19 and Office for National Statistics [Last update: {{todayStr}}]" color="accent" icon="info"> </td-message>
     </mat-card-content>
   </mat-card>
 
@@ -43,6 +41,8 @@
                     yAxisLabel='Cases/Million'
                     [timeline]="timeline"
                     [results]="dailyChangePerMillion"
+                    [referenceLines]="dailyChangeReference"
+                    showRefLines="true"
                     (select)="onSelectAdv($event)"
                   >
                       </ngx-charts-line-chart>
