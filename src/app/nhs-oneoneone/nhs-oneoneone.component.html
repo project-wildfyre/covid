@@ -35,7 +35,7 @@
     </mat-card>
 
     <mat-card>
-      <mat-card-header><h3>Daily Trend (Per Million)</h3></mat-card-header>
+      <mat-card-header><h3>Daily Trend per 100,000 population</h3></mat-card-header>
       <mat-card-content>
         <div layout="row" layout-align="start center" flex>
         <span>
@@ -49,7 +49,7 @@
             [xAxis]="xAxis"
             [yAxis]="yAxis"
             [xAxisLabel]="xAxisLabel"
-            yAxisLabel='Pathways Per Million'
+            yAxisLabel='Pathways per 100,000 population'
             [timeline]="timeline"
             [results]="dailyTriaged"
             showRefLines="true"
@@ -70,7 +70,7 @@
             [xAxis]="xAxis"
             [yAxis]="yAxis"
             [xAxisLabel]="xAxisLabel"
-            yAxisLabel='Online Per Million'
+            yAxisLabel='Online per 100,000 population'
             [timeline]="timeline"
             [results]="dailyOnline"
             [curve]="curve"
@@ -84,27 +84,27 @@
     </mat-card-content>
     </mat-card>
   <mat-card>
-    <mat-card-header><h3>Totals (Per Million)</h3></mat-card-header>
+    <mat-card-header><h3>Totals per 100,000 population</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
         <span>
-            <h4>NHS Pathways Per Million</h4>
+            <h4>NHS Pathways per 100,000 population</h4>
            <ngx-charts-pie-chart
              legendTitle="Cases"
              [view]="view"
              [legend]=false
              [labels]=true
-             [results]="totalTriagedPM"
+             [results]="totalTriagedPer100k"
            >
        </ngx-charts-pie-chart>
         </span>
-        <span>  <h4>NHS 111 Online Per Million</h4>
+        <span>  <h4>NHS 111 Online per 100,000 population</h4>
              <ngx-charts-pie-chart
                legendTitle="Cases"
                [view]="view"
                [legend]=false
                [labels]=true
-               [results]="totalOnlinePM"
+               [results]="totalOnlinePer100k"
              >
        </ngx-charts-pie-chart>
         </span>
@@ -172,20 +172,20 @@
         <th mat-header-cell  *matHeaderCellDef mat-sort-header> 111 Online </th>
         <td mat-cell *matCellDef="let nhs"> {{nhs.onlinetotal}} </td>
       </ng-container>
-      <ng-container matColumnDef="onlinetotalpermillion">
-        <th mat-header-cell  *matHeaderCellDef mat-sort-header> 111 Online / Million  </th>
-        <td mat-cell *matCellDef="let nhs"> {{nhs.onlinetotalpermillion}} </td>
+      <ng-container matColumnDef="onlinetotalper100k">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> 111 Online per 100,000 population  </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.onlinetotalper100k}} </td>
       </ng-container>
-      <ng-container matColumnDef="triagetotalpermillion">
-        <th mat-header-cell  *matHeaderCellDef mat-sort-header> NHS Pathways / Million  </th>
-        <td mat-cell *matCellDef="let nhs"> {{nhs.triagetotalpermillion}} </td>
+      <ng-container matColumnDef="triagetotalper100k">
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> NHS Pathways per 100,000 population </th>
+        <td mat-cell *matCellDef="let nhs"> {{nhs.triagetotalper100k}} </td>
       </ng-container>
       <ng-container matColumnDef="triagedayper">
-        <th mat-header-cell  *matHeaderCellDef mat-sort-header> Dalily NHS Triage / Million  </th>
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> Dalily NHS Triage per 100,000 population  </th>
         <td mat-cell *matCellDef="let nhs"> {{nhs.triagedayper}} </td>
       </ng-container>
       <ng-container matColumnDef="onlinedayper">
-        <th mat-header-cell  *matHeaderCellDef mat-sort-header> Daily Online / Million  </th>
+        <th mat-header-cell  *matHeaderCellDef mat-sort-header> Daily Online per 100,000 population  </th>
         <td mat-cell *matCellDef="let nhs"> {{nhs.onlinedayper}} </td>
       </ng-container>
 

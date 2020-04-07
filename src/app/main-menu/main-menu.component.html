@@ -5,11 +5,17 @@
   <button mat-menu-item *ngFor="let location of nhslocations"  [value]="nhslocation" (click)="selectedNHS(location)">{{location.name}}</button>
 </mat-menu>
 <mat-menu #otherMenu>
+  <a mat-menu-item href="https://public.tableau.com/profile/public.health.wales.health.protection#!/vizhome/RapidCOVID-19virology-Public/Headlinesummary" target="_blank">
+   Public Health Wales (COVID-19)
+  </a>
+  <a mat-menu-item href="https://www.gov.scot/coronavirus-covid-19/" target="_blank">
+    Scottish Government (COVID-19)
+  </a>
   <a mat-menu-item href="https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14" target="_blank">
-    UK COVID-19 Cases (PHE)
+    Public Health England (COVID-19)
   </a>
   <a mat-menu-item href="https://app.powerbi.com/view?r=eyJrIjoiNzhiNTlhZmUtYmI1Zi00NWU1LTgzNWUtNGViZTExNzlhMGFkIiwidCI6IjUwZjYwNzFmLWJiZmUtNDAxYS04ODAzLTY3Mzc0OGU2MjllMiIsImMiOjh9" target="_blank">
-    NHS Pathways Coronavirus (COVID-19)
+    NHS Pathways Coronavirus
   </a>
   <a mat-menu-item href="https://covid.joinzoe.com/data" target="_blank">COVID 19 Symptom Checker</a>
 </mat-menu>

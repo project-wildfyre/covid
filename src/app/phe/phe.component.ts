@@ -17,7 +17,7 @@ export interface Case {
   name: string;
   population: number;
   cases: number;
-  casespermillion: number;
+  casesper100k: number;
   healthindex: number;
   depravityindex: number;
   perkmsq: number;
@@ -38,21 +38,21 @@ export class PheComponent implements OnInit {
       "value": 0
     }
   ];
-  totalCasesMillion: any[] =[
+  totalCases100k: any[] =[
     {
       "name": "UK",
       "value": 0
     }
   ];
-  casesPerMillion: any[] = [
+
+  casesPer100k: any[] = [
     {
       "name": "Area",
       "series": [
       ]
     }
   ];
-  dailyChangeReference: any[];
-  dailyChangePerMillion: any[] = [
+  cases: any[] = [
     {
       "name": "Area",
       "series": [
@@ -60,13 +60,16 @@ export class PheComponent implements OnInit {
     }
   ];
 
-  multiTotalCases: any[] = [
+  dailyChangeByDate :any[] = [];
+  dailyChange: any[] = [
     {
       "name": "Area",
       "series": [
       ]
     }
   ];
+
+
   // width - height
   view: any[] = [500, 350];
   bview: any[] = [500, 500];
@@ -87,7 +90,7 @@ export class PheComponent implements OnInit {
   yAxisLabel: string = 'Case Per Million';
   timeline: boolean = false;
 
-  cases = new Map();
+  caseMap = new Map();
 
   colorScheme = {
     domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
@@ -99,7 +102,7 @@ export class PheComponent implements OnInit {
 
   dataSource = new MatTableDataSource(this.caseTable);
 
-  displayedColumns = ['name', 'cases','casespermillion', 'population', 'healthindex',  'depravityindex','perkmsq', 'populationkmsq'];
+  displayedColumns = ['name', 'cases','casesper100k', 'population', 'healthindex',  'depravityindex','perkmsq', 'populationkmsq'];
 
   todayStr: string;
 
@@ -174,9 +177,9 @@ export class PheComponent implements OnInit {
     return Math.round(value * multiplier) / multiplier;
   }
   populate(region ) {
-    this.casesPerMillion = [];
-    this.multiTotalCases = [];
-    this.cases = new Map();
+    this.casesPer100k = [];
+    this.cases = [];
+    this.caseMap = new Map();
     this._loadingService.register('overlayStarSyntax');
 
     this.fhirService.get('/MeasureReport?measure=21263'+
@@ -213,10 +216,10 @@ export class PheComponent implements OnInit {
           }
           let ident = measure.identifier[0].value;
           let idents = ident.split('-');
-          if (!this.cases.has(idents[0])) {
-            this.cases.set(idents[0],[]);
+          if (!this.caseMap.has(idents[0])) {
+            this.caseMap.set(idents[0],[]);
           };
-          var map : IMeasureReport[] = this.cases.get(idents[0]);
+          var map : IMeasureReport[] = this.caseMap.get(idents[0]);
 
           map.push(measure);
 
@@ -245,12 +248,13 @@ export class PheComponent implements OnInit {
   }
 
   buildGraph() {
-    this.multiTotalCases =  [];
-    this.casesPerMillion = [];
+    this.cases =  [];
+    this.casesPer100k = [];
     this.totalCases =[];
-    this.totalCasesMillion = [];
+    this.totalCases100k = [];
     this.caseTable = [];
-    for (let entry of this.cases.entries()) {
+    this.dailyChangeByDate = [];
+    for (let entry of this.caseMap.entries()) {
       var entTot :any = {};
       var entPer: any = {};
       entTot.name = entry[0];
@@ -276,7 +280,7 @@ export class PheComponent implements OnInit {
         valPer.name = new Date(dat[0]);
         entPer.name = rep.subject.display;
         entPer.name = rep.subject.display;
-        valPer.value = rep.group[1].measureScore.value;
+        valPer.value = rep.group[1].measureScore.value / 10;
         entPer.series.push(valPer);
         if (rep.date.startsWith(this.todayStr)) {
           // TODO  this.reports.push(rep);
@@ -303,7 +307,7 @@ export class PheComponent implements OnInit {
             name : rep.subject.display,
             population : rep.group[0].population[0].count,
             cases : valTot.value,
-            casespermillion : valPer.value,
+            casesper100k : valPer.value ,
             healthindex : hi,
             depravityindex :mdi,
             perkmsq : perhect,
@@ -326,15 +330,20 @@ export class PheComponent implements OnInit {
               id : id
             }
           };
-          this.totalCasesMillion.push(totMillion);
+          this.totalCases100k.push(totMillion);
         }
       }
-      this.multiTotalCases.push(entTot);
-      this.casesPerMillion.push(entPer);
+      this.cases.push(entTot);
+      this.casesPer100k.push(entPer);
 
     }
-    this.dailyChangePerMillion = [];
-    for(var ser of this.casesPerMillion) {
+    this.dailyChange = [];
+
+var smeg : Date;
+
+    var dailyChangeMap = new Map();
+
+    for(var ser of this.cases) {
 
       var dailyEntry: any = {
         name : ser.name,
@@ -343,6 +352,10 @@ export class PheComponent implements OnInit {
       var lastCase = 0;
       var first : boolean =true;
       ser.series.slice().reverse().forEach(function(entry) {
+        if (!dailyChangeMap.has(entry.name.valueOf())) {
+          dailyChangeMap.set(entry.name.valueOf(),[]);
+        }
+        var dailyChange  = dailyChangeMap.get(entry.name.valueOf());
 
         var change: number = (entry.value - lastCase);
         if (!first) {
@@ -350,47 +363,31 @@ export class PheComponent implements OnInit {
             name: entry.name,
             value: change
           });
+          dailyChange.push({
+            name: ser.name,
+            value: change
+          });
         }
         first = false;
         lastCase = entry.value;
       });
-      this.dailyChangePerMillion.push(dailyEntry);
-    }
-    var total = 0;
-    var cnt = 0;
-    var avg: number[] =[];
+      this.dailyChange.push(dailyEntry);
 
-    this.dailyChangeReference = [];
-    total = 0;
-    cnt = 0;
-    avg =[];
-    for(var ref of this.dailyChangePerMillion) {
-      var seriestotal: number = 0;
-      var count: number =0;
-      for(var series of ref.series) {
-        cnt++;
-        count++;
-        total += series.value;
-        seriestotal += series.value;
-      }
-      if (count>0) {
-        avg.push(seriestotal/count);
-      }
     }
-    var stdv = std(avg);
-    this.dailyChangeReference = [];
-    this.dailyChangeReference.push({
-      name : '0',
-      value : total/cnt
+    dailyChangeMap.forEach((value, key) => {
+      var day = new Date(key);
+      const month = day.toLocaleString('default', { month: 'short' });
+      var byDay = {
+        name : month+' ' + day.getDate(),
+        series : []
+      };
+      value.forEach(change => {
+         byDay.series.push(change);
+      });
+
+      this.dailyChangeByDate.push(byDay);
     });
-    this.dailyChangeReference.push({
-      name : '+',
-      value : (total/cnt)+stdv
-    });
-    this.dailyChangeReference.push({
-      name : '-',
-      value : (total/cnt)-stdv
-    });
+
 
 
     this.dataSource.data = this.caseTable;

@@ -18,8 +18,8 @@ export interface Nhs111 {
   maletotalonline : number;
   femaletotalonline : number;
   population : number;
-  triagetotalpermillion: number;
-  onlinetotalpermillion : number;
+  triagetotalper100k: number;
+  onlinetotalper100k : number;
   triagedayper: number;
   onlinedayper : number;
   nhsCost: number;
@@ -50,13 +50,13 @@ export class NhsOneoneoneComponent implements OnInit {
     }
   ];
 
-  totalOnlinePM : any[] =[
+  totalOnlinePer100k : any[] =[
     {
       "name": "UK",
       "value": 0
     }
   ];
-  totalTriagedPM: any[] =[
+  totalTriagedPer100k: any[] =[
     {
       "name": "UK",
       "value": 0
@@ -121,8 +121,8 @@ export class NhsOneoneoneComponent implements OnInit {
   displayedColumns = ['name',
     'triagetotal',
     'onlinetotal',
-    'triagetotalpermillion',
-    'onlinetotalpermillion',
+    'triagetotalper100k',
+    'onlinetotalper100k',
     'triagedayper',
     'onlinedayper',
     'population',
@@ -195,7 +195,11 @@ export class NhsOneoneoneComponent implements OnInit {
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
 
-    this.fhirService.get('/MeasureReport?measure=21264&subject.partof.identifier='+region+'&_count=100&_sort:desc=period').subscribe(
+    this.fhirService.get('/MeasureReport'
+      + '?measure=21264'
+      + '&subject.partof.identifier='+region
+      + '&_count=100'
+      + '&_sort:desc=period').subscribe(
       result => {
         const bundle = <R4.IBundle> result;
         this.processBundle(bundle);
@@ -250,8 +254,8 @@ export class NhsOneoneoneComponent implements OnInit {
     this.totalTriaged = [];
     this.dailyTriaged = [];
     this.dailyOnline = [];
-    this.totalOnlinePM = [];
-    this.totalTriagedPM = [];
+    this.totalOnlinePer100k = [];
+    this.totalTriagedPer100k = [];
     this.caseTable = [];
     for (let entry of this.cases.entries()) {
       var entOnline :any = {};
@@ -282,8 +286,8 @@ export class NhsOneoneoneComponent implements OnInit {
         var femaletotalonline = 0;
         var maletotalonline = 0;
         var pop= 0;
-        var symptompermillion = undefined;
-        var suspectedpermillion = undefined;
+        var symptomper100k = undefined;
+        var suspectedper100k = undefined;
         var dayonline=0;
         var daytriage=0;
         var dayonlineper=undefined;
@@ -331,11 +335,11 @@ export class NhsOneoneoneComponent implements OnInit {
           }
         }
         if (pop > 0) {
-          suspectedpermillion = Math.round((suspected / pop) * 1000000);
+          suspectedper100k = Math.round((suspected / pop) * 100000);
          // console.log(suspectedpermillion);
-          symptompermillion = Math.round((symptom / pop) * 1000000);
-          dayonlineper = Math.round((dayonline/pop) * 1000000);
-          daytriageper = Math.round((daytriage/pop) * 1000000);
+          symptomper100k = Math.round((symptom / pop) * 100000);
+          dayonlineper = Math.round((dayonline/pop) * 100000);
+          daytriageper = Math.round((daytriage/pop) * 100000);
 
 
           var dayTriage = {
@@ -375,26 +379,26 @@ export class NhsOneoneoneComponent implements OnInit {
           };
           this.totalOnline.push(sym);
 
-          if (suspectedpermillion !== undefined) {
+          if (suspectedper100k !== undefined) {
             var susPM = {
               name: rep.subject.display,
-              value: suspectedpermillion,
+              value: suspectedper100k,
               extra: {
                 id: id
               }
             };
-            this.totalTriagedPM.push(susPM);
+            this.totalTriagedPer100k.push(susPM);
           }
 
-          if (symptompermillion !== undefined) {
+          if (symptomper100k !== undefined) {
             var symPM = {
               name: rep.subject.display,
-              value: symptompermillion,
+              value: symptomper100k,
               extra: {
                 id: id
               }
             };
-            this.totalOnlinePM.push(symPM);
+            this.totalOnlinePer100k.push(symPM);
           }
 
           var nhs: Nhs111 = {
@@ -406,8 +410,8 @@ export class NhsOneoneoneComponent implements OnInit {
             triagetotal: suspected,
             onlinetotal: symptom,
             population: pop,
-            triagetotalpermillion: suspectedpermillion,
-            onlinetotalpermillion: symptompermillion,
+            triagetotalper100k: suspectedper100k,
+            onlinetotalper100k: symptomper100k,
             onlinedayper: dayonlineper,
             triagedayper: daytriageper,
             nhsCost: nhsCost,
