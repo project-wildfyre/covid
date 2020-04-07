@@ -123,12 +123,12 @@
         </ng-container>
 
         <ng-container matColumnDef="cases">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Cases </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Cumulative Cases </th>
           <td mat-cell *matCellDef="let report"> {{report.cases}} </td>
         </ng-container>
 
         <ng-container matColumnDef="casesper100k">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Case / 100,000 </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Incidence per 100,000 population </th>
           <td mat-cell *matCellDef="let report"> {{round(report.casesper100k)}} </td>
         </ng-container>
 
