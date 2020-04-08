@@ -182,11 +182,22 @@ export class PheComponent implements OnInit {
     this.caseMap = new Map();
     this._loadingService.register('overlayStarSyntax');
 
-    this.fhirService.get('/MeasureReport?measure=21263'+
-      '&reporter.partof.identifier='+region+
-      '&_count=100'+
-      '&_sort:desc=period'+
-      '&date=gt2020-03-20')
+    var fhirSearchUrl: string;
+    if (region.startsWith('E12') || region.startsWith('E92')) {
+      fhirSearchUrl = '/MeasureReport?measure=21263'+
+        '&reporter.partof.identifier='+region+
+        '&_count=100'+
+        '&_sort:desc=period'+
+        '&date=gt2020-03-20';
+    } else {
+      fhirSearchUrl = '/MeasureReport?measure=21263'+
+        '&reporter.identifier='+region+
+        '&_count=100'+
+        '&_sort:desc=period'+
+        '&date=gt2020-03-20';
+    }
+
+    this.fhirService.get(fhirSearchUrl)
       .subscribe(
       result => {
         const bundle = <R4.IBundle> result;
@@ -264,13 +275,19 @@ export class PheComponent implements OnInit {
 
       var reps : IMeasureReport[] = entry[1];
       for (const rep of reps) {
-          var ids = rep.identifier[0].value.split('-');
-          var id = ids[0];
+         // var ids = rep.identifier[0].value.split('-');
+          var id = rep.subject.identifier.value;
           var valTot :any = {};
           var dat = rep.date.split('T');
 
           valTot.name = new Date(dat[0]);
           entTot.name = rep.subject.display;
+          valTot.extra = {
+             id : id
+          };
+        entTot.extra = {
+          id : id
+        };
 
           valTot.value = rep.group[0].measureScore.value;
           entTot.series.push(valTot);
@@ -281,6 +298,10 @@ export class PheComponent implements OnInit {
         entPer.name = rep.subject.display;
         entPer.name = rep.subject.display;
         valPer.value = rep.group[1].measureScore.value / 10;
+        valPer.extra = {
+          id : id
+        };
+
         entPer.series.push(valPer);
         if (rep.date.startsWith(this.todayStr)) {
           // TODO  this.reports.push(rep);
@@ -339,7 +360,6 @@ export class PheComponent implements OnInit {
     }
     this.dailyChange = [];
 
-var smeg : Date;
 
     var dailyChangeMap = new Map();
 
@@ -347,7 +367,10 @@ var smeg : Date;
 
       var dailyEntry: any = {
         name : ser.name,
-        series: []
+        series: [],
+        extra : {
+          id : ser.extra.id
+        }
       };
       var lastCase = 0;
       var first : boolean =true;
@@ -361,11 +384,17 @@ var smeg : Date;
         if (!first) {
           dailyEntry.series.push({
             name: entry.name,
-            value: change
+            value: change,
+            extra : {
+              id : ser.extra.id
+            }
           });
           dailyChange.push({
             name: ser.name,
-            value: change
+            value: change,
+            extra : {
+              id : ser.extra.id
+            }
           });
         }
         first = false;
@@ -396,9 +425,14 @@ var smeg : Date;
   }
 
 
+  onDoubleClick(event) {
+    console.log(event);
+  }
   onSelectAdv(event): void {
-    // Only drill into regions
-    if (event !== undefined && event.extra !== undefined && event.extra.id.startsWith('E12')) {
+    if (event !== undefined
+      && event.extra !== undefined
+   //   && event.extra.id.startsWith('E12')
+    ) {
       var location = {code: event.extra.id, name: event.name};
 
       if (location !== undefined) {

@@ -22,7 +22,7 @@
     </mat-card>
 
   <mat-card>
-    <mat-card-header><h3>Cases</h3></mat-card-header>
+    <mat-card-header><h3>Cumulative Cases</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
         <span>
@@ -30,7 +30,7 @@
                 flex
                 [view]="view"
                 (window:resize)="onResize($event)"
-
+                [scheme]="colorScheme"
                 [legend]="legend"
                 [showXAxisLabel]="showXAxisLabel"
                 [showYAxisLabel]="showYAxisLabel"
@@ -41,7 +41,6 @@
                 [timeline]="timeline"
                 [results]="cases"
                 (select)="onSelectAdv($event)"
-
               >
               </ngx-charts-line-chart>
         </span>
@@ -50,7 +49,7 @@
               flex
               [view]="view"
               (window:resize)="onResize($event)"
-
+              [scheme]="colorScheme"
               [legend]="legend"
               [showXAxisLabel]="showXAxisLabel"
               [showYAxisLabel]="showYAxisLabel"
@@ -61,19 +60,9 @@
               [timeline]="timeline"
               [results]="casesPer100k"
               (select)="onSelectAdv($event)"
-
             >
               </ngx-charts-line-chart>
-          <!--
-            <ngx-charts-pie-chart
-              legendTitle="Cases"
-              [view]="view"
-              [legend]=false
-              [labels]=true
-              [results]="totalCases"
-            >
-                 </ngx-charts-pie-chart>
--->
+
         </span>
       </div>
     </mat-card-content>
@@ -86,6 +75,7 @@
               <span>
                  <ngx-charts-bar-vertical-stacked
                     [view]="bview"
+                    [scheme]="colorScheme"
                     gradient=false
                     legend=false
                     xAxis="true"

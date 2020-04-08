@@ -93,6 +93,7 @@ export class NhsOneoneoneComponent implements OnInit {
 
   view: any[] = [500, 350];
   aview: any[] = [700,200];
+  bview: any[] = [500,200];
 
   // options
   legend: boolean = true;
@@ -105,6 +106,8 @@ export class NhsOneoneoneComponent implements OnInit {
   xAxisLabel: string = 'Date';
   yAxisLabel: string = 'Case Per Million';
   timeline: boolean = false;
+
+  lowLevelHide = false;
 
   cases = new Map();
 
@@ -165,7 +168,9 @@ export class NhsOneoneoneComponent implements OnInit {
 
 
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
+    this.bview = [(window.innerWidth / 2)*0.97, this.bview[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
+
     this.legendCheck();
     this.doSetup();
 
@@ -195,11 +200,25 @@ export class NhsOneoneoneComponent implements OnInit {
     this.cases = new Map();
     this._loadingService.register('overlayStarSyntax');
 
-    this.fhirService.get('/MeasureReport'
-      + '?measure=21264'
-      + '&subject.partof.identifier='+region
-      + '&_count=100'
-      + '&_sort:desc=period').subscribe(
+
+    var fhirSearchUrl: string;
+
+    if ( region.startsWith('E39') ||  region.startsWith('E40')) {
+      this.lowLevelHide = false;
+      fhirSearchUrl = '/MeasureReport'
+        + '?measure=21264'
+        + '&subject.partof.identifier='+region
+        + '&_count=100'
+        + '&_sort:desc=period';
+    } else {
+      this.lowLevelHide = true;
+      fhirSearchUrl = '/MeasureReport'
+        + '?measure=21264'
+        + '&subject.identifier='+region
+        + '&_count=100'
+        + '&_sort:desc=period';
+    }
+    this.fhirService.get(fhirSearchUrl).subscribe(
       result => {
         const bundle = <R4.IBundle> result;
         this.processBundle(bundle);
@@ -452,9 +471,9 @@ export class NhsOneoneoneComponent implements OnInit {
 
     var stdv = std(avg);
     this.dailyOnlineReference = [];
-    /* 6th April disable stats on online. Trend is downwards
+
     this.dailyOnlineReference.push({
-      name : 'Average',
+      name : '0',
       value : total/cnt
     });
     this.dailyOnlineReference.push({
@@ -465,7 +484,7 @@ export class NhsOneoneoneComponent implements OnInit {
       name : '-',
       value : (total/cnt) - stdv
     });
-*/
+
     total = 0;
     cnt = 0;
     avg =[];
@@ -516,7 +535,10 @@ export class NhsOneoneoneComponent implements OnInit {
   }
   onSelectAdv(event): void {
     // Only drill into regions
-    if (event !== undefined && event.extra !== undefined && !event.extra.id.startsWith('E38') ) {
+   // console.log(event);
+    if (event !== undefined && event.extra !== undefined
+    //  && !event.extra.id.startsWith('E38')
+    ) {
       var location = {code: event.extra.id, name: event.name};
 
       if (location !== undefined) {
@@ -529,6 +551,7 @@ export class NhsOneoneoneComponent implements OnInit {
   onResize(event) {
     this.aview = [(event.target.innerWidth)*0.98,  this.aview[1]];
     this.view = [(event.target.innerWidth / 2)*0.97,  this.view[1]];
+    this.bview = [(event.target.innerWidth / 2)*0.97,  this.bview[1]];
     this.legendCheck();
   }
   round(num) {
