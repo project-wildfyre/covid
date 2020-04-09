@@ -1,14 +1,14 @@
 
 <td-layout [class]="'theme-light'">
 
-  <td-navigation-drawer flex sidenavTitle="COVID-19 UK">
+  <td-navigation-drawer #drawer flex sidenavTitle="COVID-19 UK">
     <mat-nav-list>
 
-      <a mat-list-item href="/morbidity">
+      <a mat-list-item (click)="selected('morbidity')">
         Morbidity (PHE)</a>
-      <a mat-list-item href="/phe" >
+      <a mat-list-item (click)="selected('phe')" >
         Cases (PHE)</a>
-      <a mat-list-item  href="/nhs111" >
+      <a mat-list-item (click)="selected('nhs111')" >
         Pathways (NHS 111) </a>
       <h2 matSubheader>External Resources</h2>
       <a mat-list-item href="https://public.tableau.com/profile/public.health.wales.health.protection#!/vizhome/RapidCOVID-19virology-Public/Headlinesummary" target="_blank" rel="noopener noreferrer">

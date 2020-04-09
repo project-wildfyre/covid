@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {BrowserService, Location} from "../service/browser.service";
 import {Router} from "@angular/router";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {ILocation} from "@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_Location";
 import {TdMediaService} from "@covalent/core/media";
+import {MatDrawer} from "@angular/material/sidenav";
+import {TdNavigationDrawerComponent} from "@covalent/core/layout";
 
 @Component({
   selector: 'app-main-menu',
@@ -13,7 +15,7 @@ import {TdMediaService} from "@covalent/core/media";
 export class MainMenuComponent implements OnInit {
 
 
-
+  @ViewChild(TdNavigationDrawerComponent, {static: false}) drawer: TdNavigationDrawerComponent;
 
   public regionName = "";
 
@@ -35,7 +37,14 @@ export class MainMenuComponent implements OnInit {
     });
   }
 
+  selected(location) {
+    //console.log(event);
+    if (location !== undefined) {
+      this.drawer.toggle();
+      this.router.navigate(['/'+location]);
 
+    }
+  }
 
   nameFix( name: string): string {
     name=name.replace('NHS England ','');
