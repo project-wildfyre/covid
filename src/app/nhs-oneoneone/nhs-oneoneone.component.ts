@@ -438,8 +438,8 @@ export class NhsOneoneoneComponent implements OnInit {
             id : id
           };
           if (pop == 0) {
-            console.log(rep.identifier[0].value);
-            console.log(rep);
+        //    console.log(rep.identifier[0].value);
+        //    console.log(rep);
           }
           this.caseTable.push(nhs);
         }

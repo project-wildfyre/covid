@@ -3,13 +3,15 @@ import { Routes, RouterModule } from '@angular/router';
 import {MainMenuComponent} from "./main-menu/main-menu.component";
 import {PheComponent} from "./phe/phe.component";
 import {NhsOneoneoneComponent} from "./nhs-oneoneone/nhs-oneoneone.component";
+import {MorbidityComponent} from "./morbidity/morbidity.component";
 
 
 const routes: Routes = [
   { path: '', component: MainMenuComponent,
     children : [
-      { path: '', redirectTo: 'phe', pathMatch: 'full'},
+      { path: '', redirectTo: 'morbidity', pathMatch: 'full'},
       { path: 'main', redirectTo: 'phe', pathMatch: 'full'},
+      { path: 'morbidity', component: MorbidityComponent},
       { path: 'phe', component: PheComponent},
       { path: 'phe/:region', component: PheComponent},
       { path: 'nhs111', component: NhsOneoneoneComponent},

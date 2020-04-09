@@ -49,6 +49,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {MatTableModule} from "@angular/material/table";
 import {MatSortModule} from "@angular/material/sort";
 import { NhsOneoneoneComponent } from './nhs-oneoneone/nhs-oneoneone.component';
+import { MorbidityComponent } from './morbidity/morbidity.component';
 //import { CovalentBaseEchartsModule } from '@covalent/echarts/base';
 //import {CovalentMapEchartsModule} from "@covalent/echarts/map";
 
@@ -59,7 +60,8 @@ import { NhsOneoneoneComponent } from './nhs-oneoneone/nhs-oneoneone.component';
     AppComponent,
     MainMenuComponent,
     PheComponent,
-    NhsOneoneoneComponent
+    NhsOneoneoneComponent,
+    MorbidityComponent
   ],
     imports: [
         BrowserModule,
