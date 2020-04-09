@@ -8,6 +8,8 @@ import {MatTableDataSource} from "@angular/material/table";
 import {ActivatedRoute, Router} from "@angular/router";
 import * as shape from 'd3-shape';
 import {std} from "mathjs";
+import {TdMediaService} from "@covalent/core/media";
+import {MatDrawer} from "@angular/material/sidenav";
 
 //import ukjson from '../../assets/EnglandRed.json';
 
@@ -116,11 +118,30 @@ export class PheComponent implements OnInit {
   isDoughnut: boolean = false;
   currentRegion = undefined;
 
+  public locations: Location[] = [
+    {code:'E92000001', name:'England'},
+    {code:'E12000001', name:'North East'},
+    {code:'E12000002', name:'North West'},
+    {code:'E12000003', name:'Yorkshire and The Humber'},
+    {code:'E12000004', name:'East Midlands'},
+    {code:'E12000005', name:'West Midlands'},
+    {code:'E12000006', name:'East of England'},
+    {code:'E12000007', name:'London'},
+    {code:'E12000008', name:'South East'},
+    {code:'E12000009', name:'South West'}
+  ];
+
+
+  public location: Location = this.locations[0];
+
+
   @ViewChild(MatSort, {static: false}) sort: MatSort;
+  @ViewChild(MatDrawer, {static: false}) drawer: MatDrawer;
 
   constructor(private fhirService: BrowserService,
               private route: ActivatedRoute,
               private router: Router,
+              public media : TdMediaService,
               private _loadingService: TdLoadingService) {
 
   }
@@ -152,6 +173,14 @@ export class PheComponent implements OnInit {
 
     }
 
+  }
+
+  selected(location) {
+    //console.log(event);
+    if (location !== undefined) {
+      this.router.navigate(['/phe',location.code]);
+      this.drawer.toggle();
+    }
   }
 
   onResize(event) {

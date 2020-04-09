@@ -1,13 +1,15 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatSort} from "@angular/material/sort";
-import {BrowserService} from "../service/browser.service";
+import {BrowserService, Location} from "../service/browser.service";
 import {TdLoadingService} from "@covalent/core/loading";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
 import * as shape from 'd3-shape';
 import { std } from 'mathjs';
+import {TdMediaService} from "@covalent/core/media";
+import {MatDrawer} from "@angular/material/sidenav";
 
 export interface Nhs111 {
   name: string;
@@ -153,19 +155,39 @@ export class NhsOneoneoneComponent implements OnInit {
 
   currentRegion = undefined;
 
+  public nhslocations: Location[] = [
+    {code:'E40000000', name:'NHS England'},
+    {name:"South West (North)", code:"E39000043"},
+    {name:"South West (South)", code:"E39000044"},
+    {name:"North Midlands", code:"E39000032"},
+    {name:"Cumbria and North East", code:"E39000047"},
+    {name:"East of England", code:"E39000046"},
+    {name:"Cheshire and Merseyside", code:"E39000026"},
+    {name:"Hampshire, Isle of Wight and Thames Valley", code:"E39000041"},
+    {name:"Lancashire and South Cumbria", code:"E39000040"},
+    {name:"Yorkshire and Humber", code:"E39000048"},
+    {name:"London", code:"E39000018"},
+    {name:"Kent, Surrey and Sussex", code:"E39000042"},
+    {name:"Central Midlands", code:"E39000045"},
+    {name:"Greater Manchester", code:"E39000037"},
+    {name:"West Midlands", code:"E39000033"}];
+
+  public nhslocation: Location = this.nhslocations[0];
+
   @ViewChild(MatSort, {static: false}) sort: MatSort;
+
+  @ViewChild(MatDrawer, {static: false}) drawer: MatDrawer;
 
   constructor(private fhirService: BrowserService,
               private route: ActivatedRoute,
               private router: Router,
-              private _loadingService: TdLoadingService) {
+              private _loadingService: TdLoadingService,
+              public media : TdMediaService) {
 
   }
 
 
   ngOnInit() {
-
-
 
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
     this.bview = [(window.innerWidth / 2)*0.97, this.bview[1]];
@@ -566,6 +588,16 @@ export class NhsOneoneoneComponent implements OnInit {
       this.legend = false;
     }
   }
+
+  selectedNHS(location) {
+    //console.log(event);
+    this.drawer.toggle();
+    if (location !== undefined) {
+      this.router.navigate(['/nhs111',location.code]);
+
+    }
+  }
+
   pres(value, precision) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;

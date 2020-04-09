@@ -1,47 +1,50 @@
-<mat-menu #resourceMenu>
-  <button mat-menu-item *ngFor="let location of locations"  [value]="location" (click)="selected(location)">{{location.name}}</button>
-</mat-menu>
-<mat-menu #nhsMenu>
-  <button mat-menu-item *ngFor="let location of nhslocations"  [value]="nhslocation" (click)="selectedNHS(location)">{{location.name}}</button>
-</mat-menu>
-<mat-menu #otherMenu>
-  <a mat-menu-item href="https://public.tableau.com/profile/public.health.wales.health.protection#!/vizhome/RapidCOVID-19virology-Public/Headlinesummary" target="_blank">
-   Public Health Wales (COVID-19)
-  </a>
-  <a mat-menu-item href="https://www.gov.scot/coronavirus-covid-19/" target="_blank">
-    Scottish Government (COVID-19)
-  </a>
-  <a mat-menu-item href="https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14" target="_blank">
-    Public Health England (COVID-19)
-  </a>
-  <a mat-menu-item href="https://app.powerbi.com/view?r=eyJrIjoiNzhiNTlhZmUtYmI1Zi00NWU1LTgzNWUtNGViZTExNzlhMGFkIiwidCI6IjUwZjYwNzFmLWJiZmUtNDAxYS04ODAzLTY3Mzc0OGU2MjllMiIsImMiOjh9" target="_blank">
-    NHS Pathways Coronavirus
-  </a>
-  <a mat-menu-item href="https://covid.joinzoe.com/data" target="_blank">COVID 19 Symptom Checker</a>
-</mat-menu>
 
 <td-layout [class]="'theme-light'">
-  <td-navigation-drawer flex sidenavTitle="Resources">
-    <span flex></span>
 
+  <td-navigation-drawer flex sidenavTitle="UK Resources">
+    <mat-nav-list>
+      <a mat-list-item href="https://public.tableau.com/profile/public.health.wales.health.protection#!/vizhome/RapidCOVID-19virology-Public/Headlinesummary" target="_blank" rel="noopener noreferrer">
+        Public Health Wales (COVID-19)
+      </a>
+      <a mat-list-item href="https://www.gov.scot/coronavirus-covid-19/" target="_blank" rel="noopener noreferrer">
+        Scottish Government (COVID-19)
+      </a>
+      <a mat-list-item href="https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14" target="_blank" rel="noopener noreferrer">
+        Public Health England (COVID-19)
+      </a>
+      <a mat-list-item href="https://app.powerbi.com/view?r=eyJrIjoiNzhiNTlhZmUtYmI1Zi00NWU1LTgzNWUtNGViZTExNzlhMGFkIiwidCI6IjUwZjYwNzFmLWJiZmUtNDAxYS04ODAzLTY3Mzc0OGU2MjllMiIsImMiOjh9" target="_blank" rel="noopener noreferrer">
+        NHS Pathways Coronavirus
+      </a>
+      <a mat-list-item href="https://covid.joinzoe.com/data" target="_blank" rel="noopener noreferrer">COVID 19 Symptom Checker</a>
+      <a mat-list-item tdLayoutToggle><mat-icon>close</mat-icon>Close Drawer</a>
+    </mat-nav-list>
+    <div td-navigation-drawer-menu>
+
+    </div>
   </td-navigation-drawer>
+
   <td-layout-nav navigationRoute="/">
     <div td-toolbar-content layout="row" layout-align="start center" flex>
 
-      <span  class="cursor-pointer">COVID-19 (England) {{regionName}}</span>
+      <span  class="cursor-pointer">
+        <button mat-icon-button td-menu-button tdLayoutToggle>
+             <mat-icon>menu</mat-icon>
+           </button>
+
+        COVID-19 {{regionName}}
+      </span>
 
       <span flex></span>
       <a mat-button matTooltip="UK Morbidity" routerLink="/morbidity">
         Morbidity </a>
-         <a mat-button matTooltip="Select Government Region" [matMenuTriggerFor]="resourceMenu" >
-       Cases (PHE) <mat-icon>arrow_drop_down</mat-icon></a>
-      <a mat-button matTooltip="Select NHS Area" [matMenuTriggerFor]="nhsMenu" >
-       NHS Pathways <mat-icon>arrow_drop_down</mat-icon></a>
-      <a mat-button matTooltip="Other UK COVID Sites" [matMenuTriggerFor]="otherMenu" >
-        <mat-icon>dashboard</mat-icon></a>
-    </div>
+         <a mat-button routerLink="/phe" >
+       Cases (PHE)</a>
+      <a mat-button  routerLink="/nhs111" >
+       NHS Pathways </a>
 
+    </div>
     <router-outlet></router-outlet>
+
   </td-layout-nav>
 </td-layout>
 

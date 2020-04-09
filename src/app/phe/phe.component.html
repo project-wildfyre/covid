@@ -1,7 +1,24 @@
+<mat-drawer-container hasBackdrop="false" td>
+  <mat-drawer #drawer mode="push" >
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let location of locations"  (click)="selected(location)">{{location.name}}</a>
+    </mat-nav-list>
+  </mat-drawer>
+  <mat-drawer-content>
 
-  <mat-card>
+      <mat-card>
     <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
+        <span>
+          <button mat-icon-button color="accent" (click)="drawer.toggle()">
+              <mat-icon>menu</mat-icon>
+          </button>
+        </span>
+        <span></span>
+        <span flex-grow>
       <td-message label="Info" sublabel="This data is sourced from Public Health England COVID-19 and Office for National Statistics [Last update: {{todayStr}}]" color="accent" icon="info"> </td-message>
+        </span>
+      </div>
     </mat-card-content>
   </mat-card>
 
@@ -146,6 +163,9 @@
       </table>
     </mat-card>
 </div>
+
+  </mat-drawer-content>
+</mat-drawer-container>
 <!--
 
 <div flex layout="row">

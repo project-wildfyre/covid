@@ -1,7 +1,23 @@
-
+<mat-drawer-container hasBackdrop="false">
+  <mat-drawer #drawer mode="push" >
+    <mat-nav-list>
+        <a mat-list-item *ngFor="let location of nhslocations"  (click)="selectedNHS(location)">{{location.name}}</a>
+    </mat-nav-list>
+  </mat-drawer>
+  <mat-drawer-content>
   <mat-card>
     <mat-card-content>
-      <td-message label="Info" sublabel="This data is sourced from NHS Pathways COVID-19 [Last update: {{todayStr}}]" color="accent" icon="info"> </td-message>
+      <div layout="row" layout-align="start center" flex>
+        <span>
+          <button mat-icon-button color="accent" (click)="drawer.toggle()">
+              <mat-icon>menu</mat-icon>
+          </button>
+        </span>
+        <span></span>
+        <span flex-grow>
+          <td-message label="Info" sublabel="This data is sourced from NHS Pathways COVID-19 [Last update: {{todayStr}}]" color="accent" icon="info"> </td-message>
+        </span>
+      </div>
     </mat-card-content>
   </mat-card>
 
@@ -232,3 +248,7 @@
   </mat-card>
 
 </div>
+
+  </mat-drawer-content>
+
+</mat-drawer-container>>
