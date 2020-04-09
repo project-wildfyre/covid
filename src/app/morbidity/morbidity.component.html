@@ -18,7 +18,7 @@
             [yAxis]="yAxis"
             [xAxisLabel]="xAxisLabel"
             yAxisLabel='Deaths'
-
+            (window:resize)="onResize($event)"
             [results]="totalDeaths"
             showRefLines="true"
          >
