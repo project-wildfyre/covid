@@ -2,7 +2,7 @@
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
 
 <mat-card>
-  <mat-card-header><h3>Morbidity</h3></mat-card-header>
+  <mat-card-header><h3>Mortality</h3></mat-card-header>
   <mat-card-content>
     <div layout="row" layout-align="start center" flex>
         <span>
@@ -29,8 +29,39 @@
     </div>
   </mat-card-content>
 </mat-card>
+
   <mat-card>
-    <mat-card-header><h3>Morbidity Per 100,000 Population</h3></mat-card-header>
+    <mat-card-header><h3>Daily Mortality Change</h3></mat-card-header>
+    <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
+        <span>
+
+          <ngx-charts-line-chart
+            flex
+            [view]="view"
+            [legend]="legend"
+            [scheme]="colorScheme"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxis]="xAxis"
+            [yAxis]="yAxis"
+            [curve]="curve"
+            [xAxisLabel]="xAxisLabel"
+            yAxisLabel='Mortality Change'
+            (window:resize)="onResize($event)"
+            [results]="changeDeaths"
+            showRefLines="true"
+          >
+
+          </ngx-charts-line-chart>
+        </span>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header><h3>Mortality Per 100,000 Population</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
 

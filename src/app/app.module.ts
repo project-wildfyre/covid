@@ -49,7 +49,7 @@ import { HttpClientModule } from '@angular/common/http';
 import {MatTableModule} from "@angular/material/table";
 import {MatSortModule} from "@angular/material/sort";
 import { NhsOneoneoneComponent } from './nhs-oneoneone/nhs-oneoneone.component';
-import { MorbidityComponent } from './morbidity/morbidity.component';
+import { MortalityComponent } from './mortality/mortality.component';
 import { AboutComponent } from './about/about.component';
 import {CovalentMarkdownModule} from "@covalent/markdown";
 
@@ -62,7 +62,7 @@ import {CovalentMarkdownModule} from "@covalent/markdown";
     MainMenuComponent,
     PheComponent,
     NhsOneoneoneComponent,
-    MorbidityComponent,
+    MortalityComponent,
     AboutComponent
   ],
   imports: [

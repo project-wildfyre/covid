@@ -21,7 +21,7 @@ export class AboutComponent implements OnInit {
    The formats are quite difficult for an application to work with directly, so they are converted into a modern health standard called [HL7 FHIR](https://www.hl7.org/fhir/).
    An open source [HAPI FHIR server](https://hapifhir.io/) is used to store the data and can be queried directly (the FHIR server endpoint is [https://fhir.test.xgenome.co.uk/R4/](https://fhir.test.xgenome.co.uk/R4/))
 
-   Unfortunately this site does not contain detailed information of Wales, Northern Ireland or Scotand. Sites where this information is available include:
+   This site does not contain detailed information of Wales, Northern Ireland or Scotand. Sites where this information is available:
 
    * [Public Health Wales](https://public.tableau.com/profile/public.health.wales.health.protection#!/vizhome/RapidCOVID-19virology-Public/Headlinesummary)
    * [Scottish Government](https://www.gov.scot/coronavirus-covid-19/)

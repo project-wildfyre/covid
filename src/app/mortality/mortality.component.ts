@@ -4,16 +4,27 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {TdLoadingService} from "@covalent/core/loading";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {IBundle, IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
+import * as shape from 'd3-shape';
 
 @Component({
-  selector: 'app-morbidity',
-  templateUrl: './morbidity.component.html',
-  styleUrls: ['./morbidity.component.scss']
+  selector: 'app-mortality',
+  templateUrl: './mortality.component.html',
+  styleUrls: ['./mortality.component.scss']
 })
-export class MorbidityComponent implements OnInit {
+export class MortalityComponent implements OnInit {
 
+
+  curve: any = shape.curveBasis;
 
   totalDeaths: any[] =[
+    {
+      "name": "UK",
+      "series": [
+      ]
+    }
+  ];
+
+  changeDeaths: any[] =[
     {
       "name": "UK",
       "series": [
@@ -126,6 +137,8 @@ export class MorbidityComponent implements OnInit {
   buildGraph() {
     this.totalDeaths = [];
     this.totalDeathsPer100k = [];
+    this.changeDeaths = [];
+    var changeMap = new Map();
     for (let entry of this.cases.entries()) {
 
       var entDeath: any = {};
@@ -136,15 +149,19 @@ export class MorbidityComponent implements OnInit {
       entDeathPer100k.name = entry[0];
       entDeathPer100k.series = [];
 
+      var changeDeath: any = {};
+      changeDeath.name = entry[0];
+      changeDeath.series = [];
+
       var reps: IMeasureReport[] = entry[1];
       for (const rep of reps) {
         var dat = rep.date.split('T');
-        var death: number = 0;
+        var death: number = undefined;
         var population: number = 0;
 
         entDeath.name = rep.subject.display;
         entDeathPer100k.name = rep.subject.display;
-
+        changeDeath.name = rep.subject.display;
         for (const gp of rep.group) {
           if (gp.code.coding[0].code == '255619001|419620001') {
            death = gp.measureScore.value;
@@ -153,7 +170,7 @@ export class MorbidityComponent implements OnInit {
             }
           }
         }
-        if (death > 0) {
+        if (death != undefined) {
           var dayDeath = {
             name: new Date(dat[0]),
             value: death,
@@ -161,6 +178,19 @@ export class MorbidityComponent implements OnInit {
               id: rep.subject.identifier.value
             }
           };
+
+        if (changeMap.has(rep.subject.identifier.value) ) {
+            var dayChange = {
+              name: new Date(dat[0]),
+              value: changeMap.get(rep.subject.identifier.value) - death,
+              extra: {
+                id: rep.subject.identifier.value
+              }
+            };
+            changeDeath.series.push(dayChange);
+
+          }
+          changeMap.set(rep.subject.identifier.value, death);
           entDeath.series.push(dayDeath);
           if (population > 0) {
             var per100k = (death / population) * 100000;
@@ -176,6 +206,7 @@ export class MorbidityComponent implements OnInit {
         }
 
       }
+      this.changeDeaths.push(changeDeath)
       this.totalDeaths.push(entDeath);
       this.totalDeathsPer100k.push(entDeathPer100k);
     }
