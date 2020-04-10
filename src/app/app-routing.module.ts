@@ -4,6 +4,7 @@ import {MainMenuComponent} from "./main-menu/main-menu.component";
 import {PheComponent} from "./phe/phe.component";
 import {NhsOneoneoneComponent} from "./nhs-oneoneone/nhs-oneoneone.component";
 import {MorbidityComponent} from "./morbidity/morbidity.component";
+import {AboutComponent} from "./about/about.component";
 
 
 const routes: Routes = [
@@ -15,7 +16,8 @@ const routes: Routes = [
       { path: 'phe', component: PheComponent},
       { path: 'phe/:region', component: PheComponent},
       { path: 'nhs111', component: NhsOneoneoneComponent},
-      { path: 'nhs111/:nhsregion', component: NhsOneoneoneComponent}
+      { path: 'nhs111/:nhsregion', component: NhsOneoneoneComponent},
+      { path: 'about', component: AboutComponent},
     ]}
 ];
 

@@ -90,7 +90,7 @@ export class MorbidityComponent implements OnInit {
           const measure = <IMeasureReport> entry.resource;
           if (this.todayStr === undefined) {
             this.todayStr = measure.date.substring(0, measure.date.indexOf('T'));
-            console.log(this.todayStr);
+
           }
           let ident = measure.identifier[0].value;
           let idents = ident.split('-');

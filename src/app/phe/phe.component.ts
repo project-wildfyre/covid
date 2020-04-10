@@ -7,9 +7,9 @@ import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {ActivatedRoute, Router} from "@angular/router";
 import * as shape from 'd3-shape';
-import {std} from "mathjs";
 import {TdMediaService} from "@covalent/core/media";
 import {MatDrawer} from "@angular/material/sidenav";
+import {ILocation} from "@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_Location";
 
 //import ukjson from '../../assets/EnglandRed.json';
 
@@ -131,6 +131,7 @@ export class PheComponent implements OnInit {
     {code:'E12000009', name:'South West'}
   ];
 
+  public regionName = "";
 
   public location: Location = this.locations[0];
 
@@ -152,13 +153,29 @@ export class PheComponent implements OnInit {
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
     this.legendCheck();
     this.doSetup();
+    this.setRegionName(this.currentRegion);
 
     this.route.url.subscribe( url => {
       this.doSetup();
     });
 
+    this.fhirService.locationChange.subscribe(location => {
+      this.setRegionName(location.code);
+
+    });
+
   }
 
+  setRegionName(onsCode) {
+    this.fhirService.get("/Location?identifier="+onsCode).subscribe(result => {
+      const bundle = <R4.IBundle> result;
+      for(const entry of bundle.entry) {
+        var fd: ILocation = <ILocation> entry.resource;
+        this.regionName= this.nameFix(fd.name);
+      }
+
+    })
+  }
   doSetup(): void {
   //  echarts.registerMap('UK', ukjson);
 
@@ -214,13 +231,13 @@ export class PheComponent implements OnInit {
     var fhirSearchUrl: string;
     if (region.startsWith('E12') || region.startsWith('E92')) {
       fhirSearchUrl = '/MeasureReport?measure=21263'+
-        '&reporter.partof.identifier='+region+
+        '&subject.partof.identifier='+region+
         '&_count=100'+
         '&_sort:desc=period'+
         '&date=gt2020-03-20';
     } else {
       fhirSearchUrl = '/MeasureReport?measure=21263'+
-        '&reporter.identifier='+region+
+        '&subject.identifier='+region+
         '&_count=100'+
         '&_sort:desc=period'+
         '&date=gt2020-03-20';
@@ -252,7 +269,7 @@ export class PheComponent implements OnInit {
           const measure = <IMeasureReport> entry.resource;
           if (this.todayStr === undefined) {
             this.todayStr = measure.date.substring(0, measure.date.indexOf('T'));
-            console.log(this.todayStr);
+
           }
           let ident = measure.identifier[0].value;
           let idents = ident.split('-');
@@ -469,6 +486,17 @@ export class PheComponent implements OnInit {
 
       }
     }
+  }
+
+  nameFix( name: string): string {
+    name=name.replace('NHS England ','');
+    if (name.startsWith('NHS ')) {
+      name= name.substring(3,name.length);
+    }
+    if (name.indexOf('(')>0) {
+      name = name.substring(name.indexOf('(')+1).replace(')','');
+    }
+    return name;
   }
 
 

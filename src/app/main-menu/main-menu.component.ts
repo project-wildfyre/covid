@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {BrowserService, Location} from "../service/browser.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {ILocation} from "@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_Location";
 import {TdMediaService} from "@covalent/core/media";
@@ -17,25 +17,15 @@ export class MainMenuComponent implements OnInit {
 
   @ViewChild(TdNavigationDrawerComponent, {static: false}) drawer: TdNavigationDrawerComponent;
 
-  public regionName = "";
-
   constructor(private fhirService: BrowserService,
               private router: Router,
               public media : TdMediaService) { }
 
   ngOnInit(): void {
-    this.fhirService.locationChange.subscribe(location => {
 
-      this.fhirService.get("/Location?identifier="+location.code).subscribe(result => {
-        const bundle = <R4.IBundle> result;
-        for(const entry of bundle.entry) {
-          var fd: ILocation = <ILocation> entry.resource;
-            this.regionName= " - "+ this.nameFix(fd.name);
-        }
-
-      })
-    });
   }
+
+
 
   selected(location) {
     //console.log(event);
@@ -44,6 +34,7 @@ export class MainMenuComponent implements OnInit {
       this.router.navigate(['/'+location]);
 
     }
+
   }
 
   nameFix( name: string): string {

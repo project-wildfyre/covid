@@ -10,21 +10,9 @@
         Cases (PHE)</a>
       <a mat-list-item (click)="selected('nhs111')" >
         Pathways (NHS 111) </a>
-      <h2 matSubheader>External Resources</h2>
-      <a mat-list-item href="https://public.tableau.com/profile/public.health.wales.health.protection#!/vizhome/RapidCOVID-19virology-Public/Headlinesummary" target="_blank" rel="noopener noreferrer">
-        Public Health Wales (COVID-19)
-      </a>
-      <a mat-list-item href="https://www.gov.scot/coronavirus-covid-19/" target="_blank" rel="noopener noreferrer">
-        Scottish Government (COVID-19)
-      </a>
-      <a mat-list-item href="https://www.gov.uk/government/publications/covid-19-track-coronavirus-cases" target="_blank" rel="noopener noreferrer">
-        Public Health England (COVID-19)
-      </a>
-      <a mat-list-item href="https://app.powerbi.com/view?r=eyJrIjoiNzhiNTlhZmUtYmI1Zi00NWU1LTgzNWUtNGViZTExNzlhMGFkIiwidCI6IjUwZjYwNzFmLWJiZmUtNDAxYS04ODAzLTY3Mzc0OGU2MjllMiIsImMiOjh9" target="_blank" rel="noopener noreferrer">
-        NHS Pathways Coronavirus
-      </a>
-      <a mat-list-item href="https://covid.joinzoe.com/data" target="_blank" rel="noopener noreferrer">COVID 19 Symptom Checker</a>
-      <a mat-list-item tdLayoutToggle><mat-icon>close</mat-icon>Close Drawer</a>
+      <a mat-list-item (click)="selected('about')" >
+        About this site </a>
+         <a mat-list-item tdLayoutToggle><mat-icon>close</mat-icon>Close Drawer</a>
     </mat-nav-list>
     <div td-navigation-drawer-menu>
 
@@ -39,7 +27,7 @@
              <mat-icon>menu</mat-icon>
            </button>
 
-        COVID-19 {{regionName}}
+        COVID-19 UK
       </span>
 
       <span flex></span>

@@ -6,21 +6,19 @@
   </mat-drawer>
   <mat-drawer-content>
 
-      <mat-card>
-    <mat-card-content>
-      <div layout="row" layout-align="start center" flex>
+
+      <mat-toolbar layout="row" td-toolbar-content layout-align="start center" flex>
         <span>
           <button mat-icon-button color="accent" (click)="drawer.toggle()">
               <mat-icon>menu</mat-icon>
           </button>
         </span>
-        <span></span>
-        <span flex-grow>
-      <td-message label="Info" sublabel="This data is sourced from Public Health England COVID-19 and Office for National Statistics [Last update: {{todayStr}}]" color="accent" icon="info"> </td-message>
+
+        <span>
+      Cases - {{regionName}} [Last updated: {{todayStr}}]
         </span>
-      </div>
-    </mat-card-content>
-  </mat-card>
+      </mat-toolbar>
+
 
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
 

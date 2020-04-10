@@ -10,6 +10,7 @@ import * as shape from 'd3-shape';
 import { std } from 'mathjs';
 import {TdMediaService} from "@covalent/core/media";
 import {MatDrawer} from "@angular/material/sidenav";
+import {ILocation} from "@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_Location";
 
 export interface Nhs111 {
   name: string;
@@ -174,6 +175,8 @@ export class NhsOneoneoneComponent implements OnInit {
 
   public nhslocation: Location = this.nhslocations[0];
 
+  public regionName = "";
+
   @ViewChild(MatSort, {static: false}) sort: MatSort;
 
   @ViewChild(MatDrawer, {static: false}) drawer: MatDrawer;
@@ -195,11 +198,28 @@ export class NhsOneoneoneComponent implements OnInit {
 
     this.legendCheck();
     this.doSetup();
+    this.setRegionName(this.currentRegion);
 
     this.route.url.subscribe( url => {
       this.doSetup();
     });
 
+
+    this.fhirService.locationChange.subscribe(location => {
+      this.setRegionName(location.code);
+    });
+
+  }
+
+  setRegionName(onsCode) {
+    this.fhirService.get("/Location?identifier="+onsCode).subscribe(result => {
+      const bundle = <R4.IBundle> result;
+      for(const entry of bundle.entry) {
+        var fd: ILocation = <ILocation> entry.resource;
+        this.regionName= this.nameFix(fd.name);
+      }
+
+    })
   }
 
   doSetup(): void {
@@ -256,7 +276,7 @@ export class NhsOneoneoneComponent implements OnInit {
           const measure = <IMeasureReport> entry.resource;
           if (this.todayStr === undefined) {
             this.todayStr = measure.date.substring(0, measure.date.indexOf('T'));
-            console.log(this.todayStr);
+
           }
           let ident = measure.identifier[0].value;
           let idents = ident.split('-');
@@ -545,16 +565,7 @@ export class NhsOneoneoneComponent implements OnInit {
     this._loadingService.resolve('overlayStarSyntax');
   }
 
-  nameFix( name: string): string {
-    name=name.replace('NHS England ','');
-    if (name.startsWith('NHS ')) {
-      name= name.substring(3,name.length);
-    }
-    if (name.indexOf('(')>0) {
-      name = name.substring(name.indexOf('(')+1).replace(')','');
-    }
-    return name;
-  }
+
   onSelectAdv(event): void {
     // Only drill into regions
    // console.log(event);
@@ -601,5 +612,16 @@ export class NhsOneoneoneComponent implements OnInit {
   pres(value, precision) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
+  }
+
+  nameFix( name: string): string {
+    name=name.replace('NHS England ','');
+    if (name.startsWith('NHS ')) {
+      name= name.substring(3,name.length);
+    }
+    if (name.indexOf('(')>0) {
+      name = name.substring(name.indexOf('(')+1).replace(')','');
+    }
+    return name;
   }
 }
