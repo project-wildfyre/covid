@@ -457,7 +457,7 @@ export class PheComponent implements OnInit {
 
     var dailyChangeMap = new Map();
     var dailyChangeRatioMap = new Map();
-
+    var dailyChangeRatioTotalMap = new Map();
 
     for(var ser of this.cases) {
 
@@ -512,7 +512,7 @@ export class PheComponent implements OnInit {
       lastCase = 0;
       first = true;
       ser.series.slice().forEach(entry => {
-     //   console.log(entry.name);
+
         if (!dailyChangeRatioMap.has(ser.name.valueOf())) {
           dailyChangeRatioMap.set(ser.name.valueOf(),[]);
         }
@@ -529,7 +529,7 @@ export class PheComponent implements OnInit {
         };
         if (lastRatioEntry != undefined) {
           var dailyRatio = change- lastRatioEntry.value;
-       //   console.log(ser.name + ' - ' + dailyRatio);
+
           var dailyRatioEntry = {
             name: entry.name,
             value: dailyRatio,
@@ -539,6 +539,13 @@ export class PheComponent implements OnInit {
             }
           };
           if (dailyRatio != undefined && !first) {
+
+            if (!dailyChangeRatioTotalMap.has(entry.name.valueOf())) {
+              dailyChangeRatioTotalMap.set(entry.name.valueOf(),dailyRatio);
+            } else {
+              dailyChangeRatioTotalMap.set(entry.name.valueOf(),dailyRatio + dailyChangeRatioTotalMap.get(entry.name.valueOf()));
+            }
+
             dailyChangeRatio.push(dailyRatioEntry);
           } else {
             first = false;
@@ -548,7 +555,7 @@ export class PheComponent implements OnInit {
         lastCase = entry.value;
       });
     }
-
+    console.log(dailyChangeRatioTotalMap);
     this.dailyChangeRate = [];
     dailyChangeRatioMap.forEach((value, key) => {
       var dailyEntryRate: any = {
@@ -585,39 +592,33 @@ export class PheComponent implements OnInit {
       this.dailyChangeByDate.push(byDay);
 
     });
-
     var total = 0;
-    var cnt = 0;
+    var cnt = (this.caseMap.size);
     var avg =[];
-    for(var ref of this.dailyChangeRate) {
-      var seriestotal: number = 0;
-      var count: number =0;
-      for(var series of ref.series) {
-        cnt++;
-        count++;
-        total += series.value;
-        seriestotal += series.value;
-      }
-      if (count>0) {
-        avg.push(seriestotal/count);
-      }
-    }
-  //  console.log(avg);
+
+    dailyChangeRatioTotalMap.forEach( (value, key) => {
+      avg.push(value/cnt);
+    });
+    avg.forEach(value => {
+      total += value;
+    });
+
+
     var stdv = std(avg);
+    var avgSeries = total/avg.length;
     this.dailyCasesReference = [];
     this.dailyCasesReference.push({
       name : '0',
-      value : total/cnt
+      value : avgSeries
     });
     this.dailyCasesReference.push({
       name : '+',
-      value : (total/cnt)+stdv
+      value : avgSeries+stdv
     });
     this.dailyCasesReference.push({
       name : '-',
-      value : (total/cnt)-stdv
+      value : avgSeries-stdv
     });
-
 
 
     this.dataSource.data = this.caseTable;
