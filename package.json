@@ -24,6 +24,7 @@
     "@angular/router": "~9.1.0",
     "@covalent/core": "^3.0.0",
     "@covalent/dynamic-forms": "^3.0.0",
+    "@covalent/echarts": "^3.0.1",
     "@covalent/highlight": "^3.0.0",
     "@covalent/http": "^3.0.0",
     "@covalent/markdown": "^3.0.0",

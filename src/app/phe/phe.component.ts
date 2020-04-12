@@ -11,9 +11,10 @@ import {TdMediaService} from "@covalent/core/media";
 import {MatDrawer} from "@angular/material/sidenav";
 import {ILocation} from "@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_Location";
 
-//import ukjson from '../../assets/EnglandRed.json';
+import {ukJSON} from './lageojson';
 
-//import * as echarts from 'echarts';
+import * as echarts from 'echarts';
+import {std} from "mathjs";
 
 export interface Case {
   name: string;
@@ -70,6 +71,13 @@ export class PheComponent implements OnInit {
       ]
     }
   ];
+  dailyChangeRate: any[] = [
+    {
+      "name": "Area",
+      "series": [
+      ]
+    }
+  ];
 
 
   // width - height
@@ -118,22 +126,23 @@ export class PheComponent implements OnInit {
   isDoughnut: boolean = false;
   currentRegion = undefined;
 
+  dailyCasesReference: any [] = [{
+    "name": "UK",
+    "value": 0
+  }
+  ];
+
+  public location: Location = undefined;
   public locations: Location[] = [
-    {code:'E92000001', name:'England'},
-    {code:'E12000001', name:'North East'},
-    {code:'E12000002', name:'North West'},
-    {code:'E12000003', name:'Yorkshire and The Humber'},
-    {code:'E12000004', name:'East Midlands'},
-    {code:'E12000005', name:'West Midlands'},
-    {code:'E12000006', name:'East of England'},
-    {code:'E12000007', name:'London'},
-    {code:'E12000008', name:'South East'},
-    {code:'E12000009', name:'South West'}
   ];
 
   public regionName = "";
 
-  public location: Location = this.locations[0];
+
+
+  public strMapData = "[" +
+    "]";
+  public rawMapData  = [];
 
 
   @ViewChild(MatSort, {static: false}) sort: MatSort;
@@ -147,7 +156,7 @@ export class PheComponent implements OnInit {
 
   }
   ngOnInit() {
-
+    echarts.registerMap('UK', ukJSON);
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
     this.bview = [(window.innerWidth)*0.96, this.bview[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
@@ -164,7 +173,11 @@ export class PheComponent implements OnInit {
 
     });
 
+
+
   }
+
+
 
   setRegionName(onsCode) {
     this.fhirService.get("/Location?identifier="+onsCode).subscribe(result => {
@@ -172,6 +185,24 @@ export class PheComponent implements OnInit {
       for(const entry of bundle.entry) {
         var fd: ILocation = <ILocation> entry.resource;
         this.regionName= this.nameFix(fd.name);
+        if (fd.partOf != undefined && fd.partOf.identifier != undefined) {
+          this.getParentLocation(fd.partOf.identifier.value);
+        } else {
+          this.location = {code:'E92000001', name:'England'};
+        }
+      }
+
+    })
+  }
+  getParentLocation(onsCode) {
+    this.fhirService.get("/Location?identifier="+onsCode).subscribe(result => {
+      const bundle = <R4.IBundle> result;
+      for(const entry of bundle.entry) {
+        var fd: ILocation = <ILocation> entry.resource;
+        this.location = {
+          name: fd.name,
+          code: fd.identifier[0].value
+        }
       }
 
     })
@@ -192,10 +223,16 @@ export class PheComponent implements OnInit {
 
   }
 
-  selected(location) {
-    //console.log(event);
+  selected2(location) {
+
     if (location !== undefined) {
       this.router.navigate(['/phe',location.code]);
+    }
+  }
+  selected(location) {
+
+    if (location !== undefined) {
+     this.selected2(location);
       this.drawer.toggle();
     }
   }
@@ -234,13 +271,13 @@ export class PheComponent implements OnInit {
         '&subject.partof.identifier='+region+
         '&_count=100'+
         '&_sort:desc=period'+
-        '&date=gt2020-03-20';
+        '&date=gt2020-03-09';
     } else {
       fhirSearchUrl = '/MeasureReport?measure=21263'+
         '&subject.identifier='+region+
         '&_count=100'+
         '&_sort:desc=period'+
-        '&date=gt2020-03-20';
+        '&date=gt2020-03-09';
     }
 
     this.fhirService.get(fhirSearchUrl)
@@ -263,10 +300,12 @@ export class PheComponent implements OnInit {
 
 
    processBundle(bundle: R4.IBundle) {
+
     if (bundle.entry !== undefined) {
       for (const entry of bundle.entry) {
         if (entry.resource.resourceType === 'MeasureReport') {
           const measure = <IMeasureReport> entry.resource;
+
           if (this.todayStr === undefined) {
             this.todayStr = measure.date.substring(0, measure.date.indexOf('T'));
 
@@ -305,12 +344,16 @@ export class PheComponent implements OnInit {
   }
 
   buildGraph() {
+
+    this.locations = [];
+
     this.cases =  [];
     this.casesPer100k = [];
     this.totalCases =[];
     this.totalCases100k = [];
     this.caseTable = [];
     this.dailyChangeByDate = [];
+  //  var today = undefined;
     for (let entry of this.caseMap.entries()) {
       var entTot :any = {};
       var entPer: any = {};
@@ -321,7 +364,7 @@ export class PheComponent implements OnInit {
 
       var reps : IMeasureReport[] = entry[1];
       for (const rep of reps) {
-         // var ids = rep.identifier[0].value.split('-');
+
           var id = rep.subject.identifier.value;
           var valTot :any = {};
           var dat = rep.date.split('T');
@@ -331,6 +374,7 @@ export class PheComponent implements OnInit {
           valTot.extra = {
              id : id
           };
+
         entTot.extra = {
           id : id
         };
@@ -369,7 +413,12 @@ export class PheComponent implements OnInit {
                 populationkmsq = rep.group[0].population[0].count / gp.population[0].count
               }
             }
+
           }
+          this.rawMapData.push( {
+            name:rep.subject.identifier.value,
+            value:valPer.value
+          });
           var report : Case = {
             name : rep.subject.display,
             population : rep.group[0].population[0].count,
@@ -406,8 +455,9 @@ export class PheComponent implements OnInit {
     }
     this.dailyChange = [];
 
-
     var dailyChangeMap = new Map();
+    var dailyChangeRatioMap = new Map();
+
 
     for(var ser of this.cases) {
 
@@ -418,23 +468,33 @@ export class PheComponent implements OnInit {
           id : ser.extra.id
         }
       };
+      this.locations.push({
+        name: ser.name,
+        code: ser.extra.id
+      });
+
       var lastCase = 0;
       var first : boolean =true;
-      ser.series.slice().reverse().forEach(function(entry) {
+
+      ser.series.slice().reverse().forEach(entry => {
         if (!dailyChangeMap.has(entry.name.valueOf())) {
           dailyChangeMap.set(entry.name.valueOf(),[]);
+
         }
         var dailyChange  = dailyChangeMap.get(entry.name.valueOf());
 
+
         var change: number = (entry.value - lastCase);
         if (!first) {
-          dailyEntry.series.push({
+          var daily = {
             name: entry.name,
             value: change,
             extra : {
               id : ser.extra.id
             }
-          });
+          };
+          dailyEntry.series.push(daily);
+
           dailyChange.push({
             name: ser.name,
             value: change,
@@ -446,9 +506,71 @@ export class PheComponent implements OnInit {
         first = false;
         lastCase = entry.value;
       });
-      this.dailyChange.push(dailyEntry);
 
+      // Similar to above section but after the difference
+      var lastRatioEntry:any = undefined;
+      lastCase = 0;
+      first = true;
+      ser.series.slice().forEach(entry => {
+     //   console.log(entry.name);
+        if (!dailyChangeRatioMap.has(ser.name.valueOf())) {
+          dailyChangeRatioMap.set(ser.name.valueOf(),[]);
+        }
+        var dailyChangeRatio  = dailyChangeRatioMap.get(ser.name.valueOf());
+
+        var change: number = (entry.value - lastCase);
+        var daily = {
+          name: entry.name,
+          value: change,
+          extra : {
+            id : ser.extra.id,
+            name : ser.name
+          }
+        };
+        if (lastRatioEntry != undefined) {
+          var dailyRatio = change- lastRatioEntry.value;
+       //   console.log(ser.name + ' - ' + dailyRatio);
+          var dailyRatioEntry = {
+            name: entry.name,
+            value: dailyRatio,
+            extra : {
+              id : ser.extra.id,
+              name : ser.name
+            }
+          };
+          if (dailyRatio != undefined && !first) {
+            dailyChangeRatio.push(dailyRatioEntry);
+          } else {
+            first = false;
+          }
+        }
+        lastRatioEntry = daily;
+        lastCase = entry.value;
+      });
     }
+
+    this.dailyChangeRate = [];
+    dailyChangeRatioMap.forEach((value, key) => {
+      var dailyEntryRate: any = {
+        name : 'insert name here',
+        extra: {},
+        series : []
+      };
+      var lastDailyEntry: any = {};
+      value.forEach(change => {
+         dailyEntryRate.name = change.extra.name;
+         dailyEntryRate.extra.id = change.extra.id;
+
+         var day = new Date(change.name);
+        day.setDate(day.getDate() + 2);
+
+         change.name = day;
+         dailyEntryRate.series.push(change);
+      });
+      this.dailyChangeRate.push(dailyEntryRate);
+    });
+
+
     dailyChangeMap.forEach((value, key) => {
       var day = new Date(key);
       const month = day.toLocaleString('default', { month: 'short' });
@@ -461,6 +583,39 @@ export class PheComponent implements OnInit {
       });
 
       this.dailyChangeByDate.push(byDay);
+
+    });
+
+    var total = 0;
+    var cnt = 0;
+    var avg =[];
+    for(var ref of this.dailyChangeRate) {
+      var seriestotal: number = 0;
+      var count: number =0;
+      for(var series of ref.series) {
+        cnt++;
+        count++;
+        total += series.value;
+        seriestotal += series.value;
+      }
+      if (count>0) {
+        avg.push(seriestotal/count);
+      }
+    }
+  //  console.log(avg);
+    var stdv = std(avg);
+    this.dailyCasesReference = [];
+    this.dailyCasesReference.push({
+      name : '0',
+      value : total/cnt
+    });
+    this.dailyCasesReference.push({
+      name : '+',
+      value : (total/cnt)+stdv
+    });
+    this.dailyCasesReference.push({
+      name : '-',
+      value : (total/cnt)-stdv
     });
 
 
@@ -468,8 +623,12 @@ export class PheComponent implements OnInit {
     this.dataSource.data = this.caseTable;
     this.dataSource.sort = this.sort;
     this._loadingService.resolve('overlayStarSyntax');
+    this.strMapData = JSON.stringify(this.rawMapData);
+   // console.log(this.strMapData);
   }
-
+  tooltip(params) {
+     // console.log(params);
+  }
 
   onDoubleClick(event) {
     console.log(event);

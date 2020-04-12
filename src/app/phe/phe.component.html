@@ -1,3 +1,5 @@
+
+
 <mat-drawer-container hasBackdrop="false" td>
   <mat-drawer #drawer mode="push" >
     <mat-nav-list>
@@ -9,9 +11,14 @@
 
       <mat-toolbar layout="row" td-toolbar-content layout-align="start center" flex>
         <span>
-          <button mat-icon-button color="accent" (click)="drawer.toggle()">
-              <mat-icon>menu</mat-icon>
-          </button>
+          <a mat-icon-button color="accent" (click)="drawer.toggle()">
+               <mat-icon>arrow_downward</mat-icon>
+          </a>
+            <span *ngIf="location != undefined">
+               <a mat-icon-button  color="accent" (click)="selected2(location)">
+                     <mat-icon>arrow_upward</mat-icon>
+               </a>
+            </span>
         </span>
 
         <span>
@@ -21,6 +28,32 @@
 
 
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
+<!-- <mat-card>
+  <mat-card-content>
+  <td-chart [style.height.px]="400">
+   <td-chart-tooltip [trigger]="'item'" [triggerOn]="'mousemove'" >
+     <ng-template let-params let-i="index" let-ticket="ticket" tdTooltipFormatter>
+       <ng-container *ngIf="params">
+         <div layout="row" layout-align="start center">
+           <mat-icon [style.color]="params.color">person</mat-icon>
+           <span class="mat-caption pad-left-sm">
+              {{ params.value}}
+             {{params.name}} {{tooltip(params)}}
+            </span>
+         </div>
+       </ng-container>
+     </ng-template>
+    </td-chart-tooltip>
+    <td-chart-series td-map
+                     [name]="'UK COVID-19 Cases'"
+                     [map]="'UK'"
+                     [data]="rawMapData"
+                     [roam]="true"
+                     [itemStyle]="{ emphasis: { label: { show: false } } }">
+    </td-chart-series>
+  </td-chart>
+  </mat-card-content>
+</mat-card> -->
 
     <mat-card>
       <mat-card-header><h3>Summary</h3></mat-card-header>
@@ -83,7 +116,36 @@
     </mat-card-content>
   </mat-card>
 
-   <mat-card>
+  <mat-card>
+    <mat-card-header><h3>Daily Cases Change</h3></mat-card-header>
+    <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
+              <span>
+              <ngx-charts-line-chart
+                [view]="bview"
+                [scheme]="colorScheme"
+                gradient=false
+                legend=false
+                xAxis="true"
+                yAxis="true"
+                showXAxisLabel="true"
+                showYAxisLabel="true"
+                xAxisLabel="Date"
+                yAxisLabel="Count"
+                [results]="dailyChangeRate"
+                [curve]="curve"
+                showRefLines="true"
+                [referenceLines]="dailyCasesReference"
+                (select)="onSelectAdv($event)"
+              >
+              </ngx-charts-line-chart>
+              </span>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+
+  <mat-card>
      <mat-card-header><h3>New Cases</h3></mat-card-header>
      <mat-card-content>
         <div layout="row" layout-align="start center" flex>
@@ -109,7 +171,6 @@
         </div>
        </mat-card-content>
      </mat-card>
-
 
     <mat-card>
       <table fxFill="100" mat-table matSort [dataSource]="dataSource" class="mat-elevation-z8">

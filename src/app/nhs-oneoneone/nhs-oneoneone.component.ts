@@ -156,7 +156,11 @@ export class NhsOneoneoneComponent implements OnInit {
 
   currentRegion = undefined;
 
-  public nhslocations: Location[] = [
+  public location: Location = undefined;
+  public locations: Location[] = [
+  ];
+/*
+  public locations: Location[] = [
     {code:'E40000000', name:'NHS England'},
     {name:"South West (North)", code:"E39000043"},
     {name:"South West (South)", code:"E39000044"},
@@ -172,8 +176,7 @@ export class NhsOneoneoneComponent implements OnInit {
     {name:"Central Midlands", code:"E39000045"},
     {name:"Greater Manchester", code:"E39000037"},
     {name:"West Midlands", code:"E39000033"}];
-
-  public nhslocation: Location = this.nhslocations[0];
+*/
 
   public regionName = "";
 
@@ -217,6 +220,25 @@ export class NhsOneoneoneComponent implements OnInit {
       for(const entry of bundle.entry) {
         var fd: ILocation = <ILocation> entry.resource;
         this.regionName= this.nameFix(fd.name);
+
+        if (fd.partOf != undefined && fd.partOf.identifier != undefined) {
+          this.getParentLocation(fd.partOf.identifier.value);
+        } else {
+          this.location = {code:'E40000000', name:'NHS England'};
+        }
+      }
+
+    })
+  }
+  getParentLocation(onsCode) {
+    this.fhirService.get("/Location?identifier="+onsCode).subscribe(result => {
+      const bundle = <R4.IBundle> result;
+      for(const entry of bundle.entry) {
+        var fd: ILocation = <ILocation> entry.resource;
+        this.location = {
+          name: fd.name,
+          code: fd.identifier[0].value
+        }
       }
 
     })
@@ -311,6 +333,9 @@ export class NhsOneoneoneComponent implements OnInit {
 
   buildGraph() {
 
+    this.locations = [];
+  //  this.locations.push(this.location);
+
     this.totalOnline = [];
     this.totalTriaged = [];
     this.dailyTriaged = [];
@@ -319,6 +344,7 @@ export class NhsOneoneoneComponent implements OnInit {
     this.totalTriagedPer100k = [];
     this.caseTable = [];
     for (let entry of this.cases.entries()) {
+
       var entOnline :any = {};
       var entTriaged: any = {};
 
@@ -397,7 +423,7 @@ export class NhsOneoneoneComponent implements OnInit {
         }
         if (pop > 0) {
           suspectedper100k = Math.round((suspected / pop) * 100000);
-         // console.log(suspectedpermillion);
+
           symptomper100k = Math.round((symptom / pop) * 100000);
           dayonlineper = Math.round((dayonline/pop) * 100000);
           daytriageper = Math.round((daytriage/pop) * 100000);
@@ -479,11 +505,12 @@ export class NhsOneoneoneComponent implements OnInit {
             riskFactor: (riskFactor*1000),
             id : id
           };
-          if (pop == 0) {
-        //    console.log(rep.identifier[0].value);
-        //    console.log(rep);
-          }
+
           this.caseTable.push(nhs);
+          this.locations.push({
+            name: rep.subject.display,
+            code: rep.subject.identifier.value
+          });
         }
       }
       this.dailyOnline.push(entOnline);
@@ -531,6 +558,8 @@ export class NhsOneoneoneComponent implements OnInit {
     cnt = 0;
     avg =[];
     for(var ref of this.dailyTriaged) {
+
+
       var seriestotal: number = 0;
       var count: number =0;
       for(var series of ref.series) {
@@ -568,7 +597,7 @@ export class NhsOneoneoneComponent implements OnInit {
 
   onSelectAdv(event): void {
     // Only drill into regions
-   // console.log(event);
+
     if (event !== undefined && event.extra !== undefined
     //  && !event.extra.id.startsWith('E38')
     ) {
@@ -600,12 +629,15 @@ export class NhsOneoneoneComponent implements OnInit {
     }
   }
 
-  selectedNHS(location) {
-    //console.log(event);
-    this.drawer.toggle();
+  selectedNHS2(location) {
     if (location !== undefined) {
       this.router.navigate(['/nhs111',location.code]);
-
+    }
+  }
+  selectedNHS(location) {
+    if (location !== undefined) {
+      this.drawer.toggle();
+      this.selectedNHS2(location);
     }
   }
 

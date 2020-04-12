@@ -1,15 +1,20 @@
 <mat-drawer-container hasBackdrop="false">
   <mat-drawer #drawer mode="push" >
     <mat-nav-list>
-        <a mat-list-item *ngFor="let location of nhslocations"  (click)="selectedNHS(location)">{{location.name}}</a>
+        <a mat-list-item *ngFor="let location of locations"  (click)="selectedNHS(location)">{{location.name}}</a>
     </mat-nav-list>
   </mat-drawer>
   <mat-drawer-content>
     <mat-toolbar layout="row" td-toolbar-content layout-align="start center" flex>
         <span>
-          <button mat-icon-button color="accent" (click)="drawer.toggle()">
-              <mat-icon>menu</mat-icon>
-          </button>
+          <a mat-icon-button color="accent" (click)="drawer.toggle()">
+              <mat-icon>arrow_downward</mat-icon>
+          </a>
+            <span *ngIf="location != undefined">
+            <a mat-icon-button color="accent" (click)="selectedNHS2(location)">
+              <mat-icon>arrow_upward</mat-icon>
+            </a>
+            </span>
         </span>
       <span>
       Pathways - {{regionName}} [Last updated: {{todayStr}}]
