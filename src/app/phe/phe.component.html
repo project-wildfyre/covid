@@ -11,14 +11,15 @@
 
       <mat-toolbar layout="row" td-toolbar-content layout-align="start center" flex>
         <span>
-          <a mat-icon-button color="accent" (click)="drawer.toggle()">
-               <mat-icon>arrow_downward</mat-icon>
-          </a>
-            <span *ngIf="location != undefined">
+          <span *ngIf="location != undefined">
                <a mat-icon-button  color="accent" (click)="selected2(location)">
-                     <mat-icon>arrow_upward</mat-icon>
+                     <mat-icon>first_page</mat-icon>
                </a>
             </span>
+          <a mat-icon-button color="accent" (click)="drawer.toggle()">
+               <mat-icon>menu_open</mat-icon>
+          </a>
+
         </span>
 
         <span>

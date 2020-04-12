@@ -52,9 +52,7 @@ import { NhsOneoneoneComponent } from './nhs-oneoneone/nhs-oneoneone.component';
 import { MortalityComponent } from './mortality/mortality.component';
 import { AboutComponent } from './about/about.component';
 import {CovalentMarkdownModule} from "@covalent/markdown";
-import {CovalentBaseEchartsModule} from "@covalent/echarts/base";
-import {CovalentMapEchartsModule} from "@covalent/echarts/map";
-import {CovalentTooltipEchartsModule} from "@covalent/echarts/tooltip";
+
 
 
 @NgModule({
@@ -118,12 +116,10 @@ import {CovalentTooltipEchartsModule} from "@covalent/echarts/tooltip";
     NgxGraphModule,
     NgxChartsModule,
 
-    //NgxEchartsModule,
-
     CovalentMarkdownModule,
-    CovalentBaseEchartsModule,
-    CovalentMapEchartsModule,
-    CovalentTooltipEchartsModule,
+  //  CovalentBaseEchartsModule,
+  //  CovalentMapEchartsModule,
+  //  CovalentTooltipEchartsModule,
 
   ],
   providers: [],

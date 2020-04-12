@@ -96,9 +96,6 @@ MIT
 
 @covalent/core/common
 
-@covalent/echarts
-MIT
-
 @covalent/markdown
 MIT
 
