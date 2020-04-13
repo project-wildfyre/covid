@@ -8,11 +8,11 @@
     <mat-toolbar layout="row" td-toolbar-content layout-align="start center" flex>
         <span>
             <span *ngIf="location != undefined">
-            <a mat-icon-button color="accent" (click)="selectedNHS2(location)">
+            <a mat-icon-button matTooltip="Parent Region" color="accent" (click)="selectedNHS2(location)">
               <mat-icon>first_page</mat-icon>
             </a>
             </span>
-          <a mat-icon-button color="accent" (click)="drawer.toggle()">
+          <a mat-icon-button color="accent" matTooltip="Region Menu" (click)="drawer.toggle()">
               <mat-icon>menu_open</mat-icon>
           </a>
 
