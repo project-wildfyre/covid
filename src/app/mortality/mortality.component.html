@@ -2,7 +2,7 @@
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
 
 <mat-card>
-  <mat-card-header><h3>Total Deaths</h3></mat-card-header>
+  <mat-card-header><h3>PHE Total Deaths</h3></mat-card-header>
   <mat-card-content>
     <div layout="row" layout-align="start center" flex>
         <span>
@@ -30,8 +30,9 @@
   </mat-card-content>
 </mat-card>
 
+
   <mat-card>
-    <mat-card-header><h3>Deaths Per Day</h3></mat-card-header>
+    <mat-card-header><h3>PHE Deaths Per Day</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
         <span>
@@ -61,7 +62,7 @@
   </mat-card>
 
   <mat-card>
-    <mat-card-header><h3>Deaths Per 100,000 Population</h3></mat-card-header>
+    <mat-card-header><h3>PHE Deaths Per 100,000 Population</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
 
@@ -89,4 +90,89 @@
       </div>
     </mat-card-content>
   </mat-card>
+  <mat-card>
+    <mat-card-header><h3>BDM Total Deaths Per Week</h3></mat-card-header>
+    <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
+        <span>
+
+          <ngx-charts-line-chart
+            flex
+            [view]="view"
+            [legend]="legend"
+            [scheme]="colorScheme"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxis]="xAxis"
+            [yAxis]="yAxis"
+            [xAxisLabel]="xAxisLabel"
+            yAxisLabel='Deaths'
+            (window:resize)="onResize($event)"
+            [results]="changeDeathsBMD"
+            showRefLines="true"
+          >
+
+          </ngx-charts-line-chart>
+        </span>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-header><h3>BDM Regional Deaths Per Week</h3></mat-card-header>
+    <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
+        <span>
+
+          <ngx-charts-line-chart
+            flex
+            [view]="view"
+            [legend]="legend"
+            [scheme]="colorScheme"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxis]="xAxis"
+            [yAxis]="yAxis"
+            [xAxisLabel]="xAxisLabel"
+            yAxisLabel='Deaths'
+            (window:resize)="onResize($event)"
+            [results]="changeDeathsBMDregional"
+            showRefLines="true"
+          >
+
+          </ngx-charts-line-chart>
+        </span>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-header><h3>BDM Regional Deaths Per Week Mentioning COVID</h3></mat-card-header>
+    <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
+        <span>
+
+          <ngx-charts-line-chart
+            flex
+            [view]="view"
+            [legend]="legend"
+            [scheme]="colorScheme"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxis]="xAxis"
+            [yAxis]="yAxis"
+            [xAxisLabel]="xAxisLabel"
+            yAxisLabel='Deaths'
+            (window:resize)="onResize($event)"
+            [results]="changeDeathsBMDCovid"
+            showRefLines="true"
+          >
+
+          </ngx-charts-line-chart>
+        </span>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+
 </div>

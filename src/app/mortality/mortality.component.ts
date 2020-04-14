@@ -31,6 +31,19 @@ export class MortalityComponent implements OnInit {
       ]
     }
   ];
+  changeDeathsBMD: any[] =[
+    {
+      "name": "UK",
+      "series": [
+      ]
+    }
+  ];
+  changeDeathsBMDCovid: any[] =[
+
+  ];
+  changeDeathsBMDregional : any[] =[
+
+  ];
 
   totalDeathsPer100k : any[] =[
     {
@@ -59,6 +72,9 @@ export class MortalityComponent implements OnInit {
   todayStr: string;
 
   cases = new Map();
+
+  bmdUKcases = new Map();
+  bmdRegionalcases = new Map();
 
   constructor(private fhirService: BrowserService,
               private route: ActivatedRoute,
@@ -90,6 +106,30 @@ export class MortalityComponent implements OnInit {
       result => {
         const bundle = <R4.IBundle> result;
         this.processBundle(bundle);
+
+      }
+    );
+    fhirSearchUrl = '/MeasureReport'
+      + '?measure=31531'
+      + '&subject.identifier=E92000001'
+     // + '&_count=100'+
+      + '&_sort:desc=period';
+    this.fhirService.get(fhirSearchUrl).subscribe(
+      result => {
+        const bundle = <R4.IBundle> result;
+        this.processBundleBMD(bundle, true);
+
+      }
+    );
+    fhirSearchUrl = '/MeasureReport'
+      + '?measure=31531'
+      + '&subject.partof.identifier=E92000001'
+     // + '&_count=100'+
+      + '&_sort:desc=period';
+    this.fhirService.get(fhirSearchUrl).subscribe(
+      result => {
+        const bundle = <R4.IBundle> result;
+        this.processBundleBMD(bundle, false);
 
       }
     );
@@ -132,6 +172,144 @@ export class MortalityComponent implements OnInit {
       // This may be empty
       this.buildGraph();
     }
+  }
+
+  processBundleBMD(bundle: R4.IBundle, uk: boolean) {
+    if (bundle.entry !== undefined) {
+      for (const entry of bundle.entry) {
+        if (entry.resource.resourceType === 'MeasureReport') {
+          const measure = <IMeasureReport>entry.resource;
+          if (this.todayStr === undefined) {
+            this.todayStr = measure.date.substring(0, measure.date.indexOf('T'));
+
+          }
+          let ident = measure.identifier[0].value;
+          let idents = ident.split('-');
+
+
+          if (uk) {
+            if (!this.bmdUKcases.has(idents[0])) {
+              this.bmdUKcases.set(idents[0], []);
+            }
+            var map: IMeasureReport[] = this.bmdUKcases.get(idents[0]);
+            map.push(measure);
+          } else {
+            if (!this.bmdRegionalcases.has(idents[0])) {
+              this.bmdRegionalcases.set(idents[0], []);
+            }
+            var map: IMeasureReport[] = this.bmdRegionalcases.get(idents[0]);
+            map.push(measure);
+          }
+        }
+      }
+      var more : boolean = false;
+      if (bundle.link != undefined) {
+        for (const link of bundle.link) {
+          if (link.relation == 'next') {
+            more = true;
+            let split = link.url.split('_getpages=');
+
+            this.fhirService.get('?_getpages='+split[1]).subscribe(result => {
+              this.processBundleBMD(<R4.IBundle> result, uk);
+            })
+          }
+        }
+        if (!more) {
+          this.buildGraphBMD(uk);
+        }
+      }
+    } else {
+      // This may be empty
+      this.buildGraphBMD(uk);
+    }
+  }
+
+  buildGraphBMD(uk: boolean) {
+      if (uk) {
+        this.changeDeathsBMD = [];
+        var total: any = {};
+        total.name = 'Total Deaths';
+        total.series = [];
+        var covid: any = {};
+        covid.name = 'COVID Deaths';
+        covid.series = [];
+        var fiveYr: any = {};
+        fiveYr.name = '5 Year Avg. Deaths';
+        fiveYr.series = [];
+        for (const entry of this.bmdUKcases.entries()) {
+
+          var reps: IMeasureReport[] = entry[1];
+          for (const rep of reps) {
+            var dat = rep.date.split('T');
+
+            for (const gp of rep.group) {
+              if (gp.code.coding[0].code == 'covid-deaths') {
+                 covid.series.push({
+                   name: new Date(dat[0]),
+                   value: gp.measureScore.value
+                 });
+              }
+              if (gp.code.coding[0].code == 'all-deaths') {
+                total.series.push({
+                  name: new Date(dat[0]),
+                  value: gp.measureScore.value
+                });
+              }
+              if (gp.code.coding[0].code == '5yr-avg-deaths') {
+                fiveYr.series.push({
+                  name: new Date(dat[0]),
+                  value: gp.measureScore.value
+                });
+              }
+            }
+          }
+        }
+        this.changeDeathsBMD.push(total);
+        this.changeDeathsBMD.push(covid);
+        this.changeDeathsBMD.push(fiveYr);
+        console.log(this.changeDeathsBMD);
+      } else {
+
+        this.changeDeathsBMDregional = [];
+        this.changeDeathsBMDCovid = [];
+
+        for (const entry of this.bmdRegionalcases.entries()) {
+          // Setup the series
+
+          var total: any = {};
+          total.name = 'Total Deaths';
+          total.series = [];
+          var covid: any = {};
+          covid.name = 'COVID Deaths';
+          covid.series = [];
+
+          // populate series
+          var reps: IMeasureReport[] = entry[1];
+          for (const rep of reps) {
+            var dat = rep.date.split('T');
+            total.name = rep.subject.display;
+            covid.name = rep.subject.display;
+            for (const gp of rep.group) {
+              if (gp.code.coding[0].code == 'covid-deaths') {
+                covid.series.push({
+                  name: new Date(dat[0]),
+                  value: gp.measureScore.value
+                });
+              }
+              if (gp.code.coding[0].code == 'all-deaths') {
+                total.series.push({
+                  name: new Date(dat[0]),
+                  value: gp.measureScore.value
+                });
+              }
+            }
+          }
+          this.changeDeathsBMDregional.push(total);
+          this.changeDeathsBMDCovid.push(covid);
+        }
+        console.log(this.changeDeathsBMDregional);
+        console.log(this.changeDeathsBMDCovid);
+      }
   }
 
   buildGraph() {

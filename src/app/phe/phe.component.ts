@@ -3,7 +3,7 @@ import {BrowserService, Location} from "../service/browser.service";
 import {R4} from "@ahryman40k/ts-fhir-types";
 import {IMeasureReport} from "@ahryman40k/ts-fhir-types/lib/R4";
 import {TdLoadingService} from "@covalent/core/loading";
-import {MatSort, Sort} from "@angular/material/sort";
+import {MatSort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {ActivatedRoute, Router} from "@angular/router";
 import * as shape from 'd3-shape';
