@@ -7,9 +7,9 @@
   <mat-drawer-content>
     <mat-toolbar layout="row" td-toolbar-content layout-align="start center" flex>
         <span>
-            <span *ngIf="location != undefined">
+            <span *ngIf="regionCode != undefined && regionCode != 'E40000000'">
             <a mat-icon-button matTooltip="Parent Region" color="accent" (click)="selectedNHS2(location)">
-              <mat-icon>first_page</mat-icon>
+              <mat-icon>arrow_back</mat-icon>
             </a>
             </span>
           <a mat-icon-button color="accent" matTooltip="Region Menu" (click)="drawer.toggle()">
@@ -88,7 +88,7 @@
         <div layout="row" layout-align="start center" flex>
         <span>
 
-          <ngx-charts-line-chart
+          <ngx-charts-area-chart-stacked
             flex
             [view]="view"
              [legend]="legend"
@@ -102,15 +102,14 @@
             [timeline]="timeline"
             [results]="dailyTriaged"
             showRefLines="true"
-            [curve]="curve"
-            [referenceLines]="dailyTriageReference"
+
             (select)="onSelectAdv($event)">
           >
-          </ngx-charts-line-chart>
+          </ngx-charts-area-chart-stacked>
         </span>
         <span>
 
-          <ngx-charts-line-chart
+          <ngx-charts-area-chart-stacked
             flex
             [view]="view"
             [legend]="legend"
@@ -123,11 +122,9 @@
             yAxisLabel='Online per 100,000 population'
             [timeline]="timeline"
             [results]="dailyOnline"
-            [curve]="curve"
-
             (select)="onSelectAdv($event)">
           >
-          </ngx-charts-line-chart>
+          </ngx-charts-area-chart-stacked>
       </span>
         </div>
     </mat-card-content>

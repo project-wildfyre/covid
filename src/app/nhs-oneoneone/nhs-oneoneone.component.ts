@@ -179,6 +179,7 @@ export class NhsOneoneoneComponent implements OnInit {
 */
 
   public regionName = "";
+  public regionCode = "";
 
   @ViewChild(MatSort, {static: false}) sort: MatSort;
 
@@ -215,6 +216,7 @@ export class NhsOneoneoneComponent implements OnInit {
   }
 
   setRegionName(onsCode) {
+    this.regionCode = onsCode;
     this.fhirService.get("/Location?identifier="+onsCode).subscribe(result => {
       const bundle = <R4.IBundle> result;
       for(const entry of bundle.entry) {

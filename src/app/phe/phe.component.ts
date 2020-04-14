@@ -11,9 +11,6 @@ import {TdMediaService} from "@covalent/core/media";
 import {MatDrawer} from "@angular/material/sidenav";
 import {ILocation} from "@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_Location";
 
-import {ukJSON} from './lageojson';
-
-import * as echarts from 'echarts';
 import {std} from "mathjs";
 
 export interface Case {
@@ -63,7 +60,7 @@ export class PheComponent implements OnInit {
     }
   ];
 
-  dailyChangeByDate :any[] = [];
+  newCases :any[] = [];
   dailyChange: any[] = [
     {
       "name": "Area",
@@ -137,6 +134,7 @@ export class PheComponent implements OnInit {
   ];
 
   public regionName = "";
+  public regionCode = "";
 
 
 
@@ -156,7 +154,7 @@ export class PheComponent implements OnInit {
 
   }
   ngOnInit() {
-    echarts.registerMap('UK', ukJSON);
+  //  echarts.registerMap('UK', ukJSON);
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
     this.bview = [(window.innerWidth)*0.96, this.bview[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
@@ -180,6 +178,7 @@ export class PheComponent implements OnInit {
 
 
   setRegionName(onsCode) {
+    this.regionCode = onsCode;
     this.fhirService.get("/Location?identifier="+onsCode).subscribe(result => {
       const bundle = <R4.IBundle> result;
       for(const entry of bundle.entry) {
@@ -352,7 +351,7 @@ export class PheComponent implements OnInit {
     this.totalCases =[];
     this.totalCases100k = [];
     this.caseTable = [];
-    this.dailyChangeByDate = [];
+    this.newCases = [];
   //  var today = undefined;
     for (let entry of this.caseMap.entries()) {
       var entTot :any = {};
@@ -459,6 +458,8 @@ export class PheComponent implements OnInit {
     var dailyChangeRatioMap = new Map();
     var dailyChangeRatioTotalMap = new Map();
 
+    // Calculate changes
+
     for(var ser of this.cases) {
 
       var dailyEntry: any = {
@@ -477,11 +478,11 @@ export class PheComponent implements OnInit {
       var first : boolean =true;
 
       ser.series.slice().reverse().forEach(entry => {
-        if (!dailyChangeMap.has(entry.name.valueOf())) {
-          dailyChangeMap.set(entry.name.valueOf(),[]);
-
+        if (!dailyChangeMap.has(ser.name.valueOf())) {
+          dailyChangeMap.set(ser.name.valueOf(),[]);
+       //   console.log(ser.name);
         }
-        var dailyChange  = dailyChangeMap.get(entry.name.valueOf());
+        var dailyChange  = dailyChangeMap.get(ser.name.valueOf());
 
 
         var change: number = (entry.value - lastCase);
@@ -496,7 +497,7 @@ export class PheComponent implements OnInit {
           dailyEntry.series.push(daily);
 
           dailyChange.push({
-            name: ser.name,
+            name: entry.name,
             value: change,
             extra : {
               id : ser.extra.id
@@ -520,7 +521,7 @@ export class PheComponent implements OnInit {
 
         var change: number = (entry.value - lastCase);
         var daily = {
-          name: entry.name,
+          name: new Date(entry.name),
           value: change,
           extra : {
             id : ser.extra.id,
@@ -555,7 +556,7 @@ export class PheComponent implements OnInit {
         lastCase = entry.value;
       });
     }
-    console.log(dailyChangeRatioTotalMap);
+
     this.dailyChangeRate = [];
     dailyChangeRatioMap.forEach((value, key) => {
       var dailyEntryRate: any = {
@@ -578,20 +579,18 @@ export class PheComponent implements OnInit {
     });
 
 
+    // copy daily new cases map into ngx graph object
     dailyChangeMap.forEach((value, key) => {
-      var day = new Date(key);
-      const month = day.toLocaleString('default', { month: 'short' });
-      var byDay = {
-        name : month+' ' + day.getDate(),
+      var byUA = {
+        name : key,
         series : []
       };
       value.forEach(change => {
-         byDay.series.push(change);
+         byUA.series.push(change);
       });
-
-      this.dailyChangeByDate.push(byDay);
-
+      this.newCases.push(byUA)
     });
+
     var total = 0;
     var cnt = (this.caseMap.size);
     var avg =[];

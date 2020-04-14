@@ -11,10 +11,12 @@
 
       <mat-toolbar layout="row" td-toolbar-content layout-align="start center" flex>
         <span>
-          <span *ngIf="location != undefined">
-               <a mat-icon-button matTooltip="Parent Region" color="accent" (click)="selected2(location)">
-                     <mat-icon>first_page</mat-icon>
+          <span *ngIf="regionCode != undefined">
+
+               <a *ngIf="regionCode != 'E92000001'" mat-icon-button matTooltip="Parent Region" color="accent" (click)="selected2(location)">
+                     <mat-icon>arrow_back</mat-icon>
                </a>
+
             </span>
           <a mat-icon-button matTooltip="Region Menu" color="accent" (click)="drawer.toggle()">
                <mat-icon>menu_open</mat-icon>
@@ -117,6 +119,34 @@
     </mat-card-content>
   </mat-card>
 
+
+
+  <mat-card>
+     <mat-card-header><h3>New Cases</h3></mat-card-header>
+     <mat-card-content>
+        <div layout="row" layout-align="start center" flex>
+              <span>
+                 <ngx-charts-area-chart-stacked
+                    [view]="bview"
+                    [scheme]="colorScheme"
+                    gradient=false
+                    legend=false
+                    xAxis="true"
+                    yAxis="true"
+                    showXAxisLabel="true"
+                    showYAxisLabel="true"
+                    xAxisLabel="Date"
+                    yAxisLabel="Count"
+                    [results]="newCases"
+                    (select)="onSelectAdv($event)"
+                  >
+                 </ngx-charts-area-chart-stacked>
+
+              </span>
+        </div>
+       </mat-card-content>
+     </mat-card>
+
   <mat-card>
     <mat-card-header><h3>Daily Cases Change</h3></mat-card-header>
     <mat-card-content>
@@ -134,7 +164,6 @@
                 xAxisLabel="Date"
                 yAxisLabel="Count"
                 [results]="dailyChangeRate"
-
                 showRefLines="true"
                 [referenceLines]="dailyCasesReference"
                 (select)="onSelectAdv($event)"
@@ -147,33 +176,6 @@
 
 
   <mat-card>
-     <mat-card-header><h3>New Cases</h3></mat-card-header>
-     <mat-card-content>
-        <div layout="row" layout-align="start center" flex>
-              <span>
-                 <ngx-charts-bar-vertical-stacked
-                    [view]="bview"
-                    [scheme]="colorScheme"
-                    gradient=false
-                    legend=false
-                    xAxis="true"
-                    yAxis="true"
-                    showXAxisLabel="true"
-                    showYAxisLabel="true"
-                    xAxisLabel="Date"
-                    yAxisLabel="Count"
-                    [results]="dailyChangeByDate"
-                    [barPadding]="1"
-                    (select)="onSelectAdv($event)"
-                  >
-                 </ngx-charts-bar-vertical-stacked>
-
-              </span>
-        </div>
-       </mat-card-content>
-     </mat-card>
-
-    <mat-card>
       <table fxFill="100" mat-table matSort [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
           <th mat-header-cell  *matHeaderCellDef mat-sort-header width="25% "> Area </th>
