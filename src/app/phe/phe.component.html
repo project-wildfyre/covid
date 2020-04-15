@@ -31,23 +31,23 @@
 
 
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
-<!-- <mat-card>
+<span *ngIf="false && UKJson != undefined">
+ <mat-card>
   <mat-card-content>
-  <td-chart [style.height.px]="400">
+  <td-chart [style.height.px]="400" (click)="mapClick($event)">
    <td-chart-tooltip [trigger]="'item'" [triggerOn]="'mousemove'" >
      <ng-template let-params let-i="index" let-ticket="ticket" tdTooltipFormatter>
        <ng-container *ngIf="params">
          <div layout="row" layout-align="start center">
-           <mat-icon [style.color]="params.color">person</mat-icon>
+          <!-- <mat-icon [style.color]="params.color">person</mat-icon> -->
            <span class="mat-caption pad-left-sm">
-              {{ params.value}}
-             {{params.name}} {{tooltip(params)}}
+              {{params.name}}  {{params.value}} {{tooltip(params)}}
             </span>
          </div>
        </ng-container>
      </ng-template>
     </td-chart-tooltip>
-    <td-chart-series td-map
+    <td-chart-series #chart td-map
                      [name]="'UK COVID-19 Cases'"
                      [map]="'UK'"
                      [data]="rawMapData"
@@ -56,7 +56,8 @@
     </td-chart-series>
   </td-chart>
   </mat-card-content>
-</mat-card> -->
+</mat-card>
+  </span>
 
     <mat-card>
       <mat-card-header><h3>Summary</h3></mat-card-header>

@@ -12,6 +12,9 @@ import {MatDrawer} from "@angular/material/sidenav";
 import {ILocation} from "@ahryman40k/ts-fhir-types/lib/R4/Resource/RTTI_Location";
 
 import {std} from "mathjs";
+import {HttpClient} from "@angular/common/http";
+import * as echarts from 'echarts';
+import {TdChartSeriesMapComponent} from "@covalent/echarts/map";
 
 export interface Case {
   name: string;
@@ -136,25 +139,31 @@ export class PheComponent implements OnInit {
   public regionName = "";
   public regionCode = "";
 
+  public UKJson = undefined;
+
 
 
   public strMapData = "[" +
     "]";
-  public rawMapData  = [];
+  public rawMapData: any[];
+
 
 
   @ViewChild(MatSort, {static: false}) sort: MatSort;
   @ViewChild(MatDrawer, {static: false}) drawer: MatDrawer;
 
+  @ViewChild(TdChartSeriesMapComponent, {static: false}) chart: TdChartSeriesMapComponent;
+
   constructor(private fhirService: BrowserService,
               private route: ActivatedRoute,
               private router: Router,
               public media : TdMediaService,
-              private _loadingService: TdLoadingService) {
+              private _loadingService: TdLoadingService,
+              private http: HttpClient) {
 
   }
   ngOnInit() {
-  //  echarts.registerMap('UK', ukJSON);
+  //
     this.view = [(window.innerWidth / 2)*0.97, this.view[1]];
     this.bview = [(window.innerWidth)*0.96, this.bview[1]];
     this.aview = [(window.innerWidth)*0.98, this.aview[1]];
@@ -171,7 +180,13 @@ export class PheComponent implements OnInit {
 
     });
 
-
+    this.http.get('https://c19pub.azureedge.net/regions.geojson').subscribe(json => {
+      var stringified = JSON.stringify(json);
+    //  stringified = stringified.replace('"rgn18cd"', '"name"');
+      stringified = stringified.split('"rgn18cd"').join('"name"')
+      this.UKJson = JSON.parse(stringified);
+      echarts.registerMap('UK', this.UKJson);
+    })
 
   }
 
@@ -352,6 +367,8 @@ export class PheComponent implements OnInit {
     this.totalCases100k = [];
     this.caseTable = [];
     this.newCases = [];
+
+    var mapData:any = [];
   //  var today = undefined;
     for (let entry of this.caseMap.entries()) {
       var entTot :any = {};
@@ -414,9 +431,13 @@ export class PheComponent implements OnInit {
             }
 
           }
-          this.rawMapData.push( {
-            name:rep.subject.identifier.value,
-            value:valPer.value
+          mapData.push( {
+            name: rep.subject.identifier.value,
+            value: 12, //valPer.value,
+            label: {
+              name: 'Jorvik Republic'
+            },
+            itemStyle:{ borderColor : "#777",  color: '#F06C00' }
           });
           var report : Case = {
             name : rep.subject.display,
@@ -453,6 +474,9 @@ export class PheComponent implements OnInit {
 
     }
     this.dailyChange = [];
+    this.rawMapData=[];
+    this.rawMapData.push(mapData);
+    console.log(this.rawMapData);
 
     var dailyChangeMap = new Map();
     var dailyChangeRatioMap = new Map();
@@ -623,11 +647,21 @@ export class PheComponent implements OnInit {
     this.dataSource.data = this.caseTable;
     this.dataSource.sort = this.sort;
     this._loadingService.resolve('overlayStarSyntax');
-    this.strMapData = JSON.stringify(this.rawMapData);
+
    // console.log(this.strMapData);
   }
   tooltip(params) {
-     // console.log(params);
+    //console.log(params);
+  //  console.log(this.chart.data);
+    if (this.chart.data.length> (params.dataIndex -1)){
+    //  console.log(this.chart.data[params.dataIndex-1].value);
+   // this.chart.
+    }
+    //return this.chart.data[params.dataIndex-1].value;
+    return params.dataIndex;
+  }
+  mapClick(event) {
+    console.log(event);
   }
 
   onDoubleClick(event) {
