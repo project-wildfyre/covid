@@ -354,6 +354,8 @@ export class PheComponent implements OnInit {
       // This may be empty
       this.buildGraph();
      }
+    } else {
+      this.buildGraph();
     }
   }
 
@@ -381,29 +383,31 @@ export class PheComponent implements OnInit {
       var reps : IMeasureReport[] = entry[1];
       for (const rep of reps) {
 
-          var id = rep.subject.identifier.value;
-          var valTot :any = {};
-          var dat = rep.date.split('T');
+        var id = rep.subject.identifier.value;
+        var valTot: any = {};
+        var dat = rep.date.split('T');
 
-          valTot.name = new Date(dat[0]);
-          entTot.name = rep.subject.display;
-          valTot.extra = {
-             id : id
-          };
-
-        entTot.extra = {
-          id : id
+        valTot.name = new Date(dat[0]);
+        entTot.name = rep.subject.display;
+        valTot.extra = {
+          id: id
         };
 
-          valTot.value = rep.group[0].measureScore.value;
-          entTot.series.push(valTot);
+        entTot.extra = {
+          id: id
+        };
 
-        var valPer:any = {};
+        valTot.value = rep.group[0].measureScore.value;
+        entTot.series.push(valTot);
+
+        var valPer: any = {};
 
         valPer.name = new Date(dat[0]);
         entPer.name = rep.subject.display;
         entPer.name = rep.subject.display;
-        valPer.value = rep.group[1].measureScore.value / 10;
+        if (rep.group[1].measureScore != undefined) {
+          valPer.value = rep.group[1].measureScore.value / 10;
+        } else { valPer.value = 0; }
         valPer.extra = {
           id : id
         };
@@ -476,7 +480,6 @@ export class PheComponent implements OnInit {
     this.dailyChange = [];
     this.rawMapData=[];
     this.rawMapData.push(mapData);
-    console.log(this.rawMapData);
 
     var dailyChangeMap = new Map();
     var dailyChangeRatioMap = new Map();
