@@ -55,6 +55,7 @@ import {CovalentMarkdownModule} from "@covalent/markdown";
 import {CovalentTooltipEchartsModule} from "@covalent/echarts/tooltip";
 import {CovalentBaseEchartsModule} from "@covalent/echarts/base";
 import {CovalentMapEchartsModule} from "@covalent/echarts/map";
+import { BdmComponent } from './bdm/bdm.component';
 
 
 
@@ -65,7 +66,8 @@ import {CovalentMapEchartsModule} from "@covalent/echarts/map";
     PheComponent,
     NhsOneoneoneComponent,
     MortalityComponent,
-    AboutComponent
+    AboutComponent,
+    BdmComponent
   ],
   imports: [
     BrowserModule,

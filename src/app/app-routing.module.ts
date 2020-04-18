@@ -5,6 +5,7 @@ import {PheComponent} from "./phe/phe.component";
 import {NhsOneoneoneComponent} from "./nhs-oneoneone/nhs-oneoneone.component";
 import {MortalityComponent} from "./mortality/mortality.component";
 import {AboutComponent} from "./about/about.component";
+import {BdmComponent} from "./bdm/bdm.component";
 
 
 const routes: Routes = [
@@ -13,6 +14,7 @@ const routes: Routes = [
       { path: '', redirectTo: 'main', pathMatch: 'full'},
       { path: 'main', component: MortalityComponent},
       { path: 'phe', component: PheComponent},
+      { path: 'bdm', component: BdmComponent},
       { path: 'phe/:region', component: PheComponent},
       { path: 'nhs111', component: NhsOneoneoneComponent},
       { path: 'nhs111/:nhsregion', component: NhsOneoneoneComponent},

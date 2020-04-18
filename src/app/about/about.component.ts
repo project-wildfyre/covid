@@ -14,7 +14,7 @@ export class AboutComponent implements OnInit {
 
    * [Public Health England](https://www.gov.uk/government/publications/covid-19-track-coronavirus-cases)
    * [NHS Pathways and 111 online Potential Symptoms](https://digital.nhs.uk/data-and-information/publications/statistical/mi-potential-covid-19-symptoms-reported-through-nhs-pathways-and-111-online/latest)
-   * [Births, Deaths and Marriages - Deaths registered weekly in England and Wales](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/bulletins/deathsregisteredweeklyinenglandandwalesprovisional/latest)
+   * [Births, Deaths and Marriages - Deaths registered weekly in England and Wales](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/weeklyprovisionalfiguresondeathsregisteredinenglandandwales)
    * Office for National Statistics - for UK organisational and geographic data.
 
 <br>

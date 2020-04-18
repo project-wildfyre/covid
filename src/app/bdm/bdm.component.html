@@ -4,15 +4,15 @@
 
     <mat-toolbar layout="row" td-toolbar-content layout-align="start center" flex>
       <span>
-      Hospital COVID-19 Deaths [Last updated: {{todayStr}}]
+      Births, Deaths and Marriages - Weekly Report [Last updated: {{todayStr}}]
         </span>
     </mat-toolbar>
-<div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
 
-<mat-card>
-  <mat-card-header><h3>Hospital COVID-19 Total Deaths</h3></mat-card-header>
-  <mat-card-content>
-    <div layout="row" layout-align="start center" flex>
+    <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
+  <mat-card>
+    <mat-card-header><h3>BDM Total Deaths Per Week</h3></mat-card-header>
+    <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
         <span>
 
           <ngx-charts-line-chart
@@ -27,53 +27,20 @@
             [xAxisLabel]="xAxisLabel"
             yAxisLabel='Deaths'
             (window:resize)="onResize($event)"
-            [results]="totalDeaths"
-            showRefLines="true"
-         >
-
-          </ngx-charts-line-chart>
-        </span>
-
-    </div>
-  </mat-card-content>
-</mat-card>
-
-
-  <mat-card>
-    <mat-card-header><h3>Hospital COVID-19 Deaths Per Day</h3></mat-card-header>
-    <mat-card-content>
-      <div layout="row" layout-align="start center" flex>
-        <span>
-
-          <ngx-charts-area-chart
-            flex
-            [view]="view"
-            [legend]="legend"
-            [scheme]="colorScheme"
-            [showXAxisLabel]="showXAxisLabel"
-            [showYAxisLabel]="showYAxisLabel"
-            [xAxis]="xAxis"
-            [yAxis]="yAxis"
-
-            [xAxisLabel]="xAxisLabel"
-            yAxisLabel='Mortality Change'
-            (window:resize)="onResize($event)"
-            [results]="changeDeaths"
+            [results]="changeDeathsBMD"
             showRefLines="true"
           >
 
-          </ngx-charts-area-chart>
+          </ngx-charts-line-chart>
         </span>
 
       </div>
     </mat-card-content>
   </mat-card>
-
   <mat-card>
-    <mat-card-header><h3>Hospital COVID-19 Deaths Per 100,000 Population</h3></mat-card-header>
+    <mat-card-header><h3>BDM Regional Deaths Per Week</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
-
         <span>
 
           <ngx-charts-line-chart
@@ -86,18 +53,74 @@
             [xAxis]="xAxis"
             [yAxis]="yAxis"
             [xAxisLabel]="xAxisLabel"
-            yAxisLabel='Deaths per 100,000 population'
-
-            [results]="totalDeathsPer100k"
-
-            showRefLines="false"
+            yAxisLabel='Deaths'
+            (window:resize)="onResize($event)"
+            [results]="changeDeathsBMDregional"
+            showRefLines="true"
           >
 
           </ngx-charts-line-chart>
-      </span>
+        </span>
+
       </div>
     </mat-card-content>
   </mat-card>
+  <mat-card>
+    <mat-card-header><h3>BDM Regional Deaths Per Week Mentioning COVID</h3></mat-card-header>
+    <mat-card-content>
+      <div layout="row" layout-align="start center" flex>
+        <span>
+
+          <ngx-charts-line-chart
+            flex
+            [view]="view"
+            [legend]="legend"
+            [scheme]="colorScheme"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxis]="xAxis"
+            [yAxis]="yAxis"
+            [xAxisLabel]="xAxisLabel"
+            yAxisLabel='Deaths'
+            (window:resize)="onResize($event)"
+            [results]="changeDeathsBMDCovid"
+            showRefLines="true"
+          >
+
+          </ngx-charts-line-chart>
+        </span>
+
+      </div>
+    </mat-card-content>
+  </mat-card>
+      <mat-card>
+        <mat-card-header><h3>BDM Place of Death Per Week</h3></mat-card-header>
+        <mat-card-content>
+          <div layout="row" layout-align="start center" flex>
+        <span>
+          <ngx-charts-line-chart
+            flex
+            [view]="view"
+            [legend]="legend"
+            [scheme]="colorScheme"
+            [showXAxisLabel]="showXAxisLabel"
+            [showYAxisLabel]="showYAxisLabel"
+            [xAxis]="xAxis"
+            [yAxis]="yAxis"
+            [xAxisLabel]="xAxisLabel"
+            yAxisLabel='Deaths'
+            (window:resize)="onResize($event)"
+            [results]="pods"
+            showRefLines="true"
+          >
+
+          </ngx-charts-line-chart>
+        </span>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+
 </div>
-</mat-drawer-content>
+  </mat-drawer-content>
 </mat-drawer-container>
