@@ -29,8 +29,12 @@
         </span>
       </mat-toolbar>
 
-
+    <div class="app-body">
+    <mat-card>
+      <td-message color='accent' label='Warning' sublabel="English Lab reported cases are based on specimen date and so results for the last 72 hours are unreliable. In order to have consistency with other UK countries, latest results are omitted in the graphs below."></td-message>
+    </mat-card>
 <div *tdLoading="'overlayStarSyntax'; mode:'indeterminate'; type:'circle'; strategy:'overlay'; color:'accent'">
+
 <span *ngIf="false && UKJson != undefined">
  <mat-card>
   <mat-card-content>
@@ -74,7 +78,7 @@
     </mat-card>
 
   <mat-card>
-    <mat-card-header><h3>Cumulative Lab Confirmed Cases</h3></mat-card-header>
+    <mat-card-header><h3>Cumulative Lab Confirmed Cases (by Specimen Date)</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
         <span>
@@ -123,7 +127,7 @@
 
 
   <mat-card>
-     <mat-card-header><h3>Lab Confirmed New Cases</h3></mat-card-header>
+     <mat-card-header><h3>Lab Confirmed New Cases (by Specimen Date)</h3></mat-card-header>
      <mat-card-content>
         <div layout="row" layout-align="start center" flex>
               <span>
@@ -149,7 +153,7 @@
      </mat-card>
 
   <mat-card>
-    <mat-card-header><h3>Lab Confirmed Daily Cases Change</h3></mat-card-header>
+    <mat-card-header><h3>Lab Confirmed Daily Cases Change (by Specimen Date)</h3></mat-card-header>
     <mat-card-content>
       <div layout="row" layout-align="start center" flex>
               <span>
@@ -226,7 +230,7 @@
       </table>
     </mat-card>
 </div>
-
+    </div>
   </mat-drawer-content>
 </mat-drawer-container>
 <!--

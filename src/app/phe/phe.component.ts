@@ -280,18 +280,23 @@ export class PheComponent implements OnInit {
     this._loadingService.register('overlayStarSyntax');
 
     var fhirSearchUrl: string;
+    var d = new Date();
+    var daysago =  new Date(d.setDate(d.getDate() - 4));
+
     if (region.startsWith('E12') || region.startsWith('E92')) {
       fhirSearchUrl = '/MeasureReport?measure=21263'+
         '&subject.partof.identifier='+region+
         '&_count=100'+
         '&_sort:desc=period'+
-        '&date=gt2020-03-09';
+        '&date=gt2020-03-09' +
+        '&date=le'+daysago.toISOString().split('T')[0];
     } else {
       fhirSearchUrl = '/MeasureReport?measure=21263'+
         '&subject.identifier='+region+
         '&_count=100'+
         '&_sort:desc=period'+
-        '&date=gt2020-03-09';
+        '&date=gt2020-03-09'+
+        '&date=le'+daysago.toISOString().split('T')[0];
     }
 
     this.fhirService.get(fhirSearchUrl)
