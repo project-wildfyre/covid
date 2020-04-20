@@ -135,6 +135,8 @@ export class PheComponent implements OnInit {
   public location: Location = undefined;
   public locations: Location[] = [
   ];
+  public parentLocations: Location[] = [
+  ];
 
   public regionName = "";
   public regionCode = "";
@@ -202,6 +204,7 @@ export class PheComponent implements OnInit {
         if (fd.partOf != undefined && fd.partOf.identifier != undefined) {
           this.getParentLocation(fd.partOf.identifier.value);
         } else {
+          this.parentLocations = [];
           this.location = {code:'E92000001', name:'England'};
         }
       }
@@ -217,6 +220,21 @@ export class PheComponent implements OnInit {
           name: fd.name,
           code: fd.identifier[0].value
         }
+        this.getChildLocations(fd.identifier[0].value);
+      }
+
+    })
+  }
+  getChildLocations(onsCode) {
+    this.parentLocations = [];
+    this.fhirService.get("/Location?partof.identifier="+onsCode).subscribe(result => {
+      const bundle = <R4.IBundle> result;
+      for(const entry of bundle.entry) {
+        var fd: ILocation = <ILocation> entry.resource;
+        this.parentLocations.push({
+          name: fd.name,
+          code: fd.identifier[0].value
+        });
       }
 
     })

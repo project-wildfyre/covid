@@ -3,6 +3,8 @@
 <mat-drawer-container hasBackdrop="false" td>
   <mat-drawer #drawer mode="push" >
     <mat-nav-list>
+      <a mat-list-item *ngFor="let location of parentLocations"  (click)="selected(location)">{{location.name}}</a>
+      <h4>Sub Regions</h4>
       <a mat-list-item *ngFor="let location of locations"  (click)="selected(location)">{{location.name}}</a>
     </mat-nav-list>
   </mat-drawer>
