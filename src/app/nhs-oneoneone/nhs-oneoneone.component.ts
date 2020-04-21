@@ -135,12 +135,6 @@ export class NhsOneoneoneComponent implements OnInit {
     'nhsCost',
     'riskFactor'
 
-   //  'maletotal',
- //   'femaletotal',
-   // 'ratiototal',
-   // 'maletotalonline',
-  //  'femaletotalonline',
-  //  'ratiototalonline'
   ];
 
   todayStr: string;
@@ -159,8 +153,10 @@ export class NhsOneoneoneComponent implements OnInit {
   public location: Location = undefined;
   public locations: Location[] = [
   ];
-/*
-  public locations: Location[] = [
+  public parentLocations: Location[] = [
+  ];
+
+  public toplocations: Location[] = [
     {code:'E40000000', name:'NHS England'},
     {name:"South West (North)", code:"E39000043"},
     {name:"South West (South)", code:"E39000044"},
@@ -176,7 +172,7 @@ export class NhsOneoneoneComponent implements OnInit {
     {name:"Central Midlands", code:"E39000045"},
     {name:"Greater Manchester", code:"E39000037"},
     {name:"West Midlands", code:"E39000033"}];
-*/
+
 
   public regionName = "";
   public regionCode = "";
@@ -226,12 +222,15 @@ export class NhsOneoneoneComponent implements OnInit {
         if (fd.partOf != undefined && fd.partOf.identifier != undefined) {
           this.getParentLocation(fd.partOf.identifier.value);
         } else {
+          this.parentLocations = [];
           this.location = {code:'E40000000', name:'NHS England'};
         }
       }
 
     })
   }
+
+
   getParentLocation(onsCode) {
     this.fhirService.get("/Location?identifier="+onsCode).subscribe(result => {
       const bundle = <R4.IBundle> result;
@@ -241,9 +240,30 @@ export class NhsOneoneoneComponent implements OnInit {
           name: fd.name,
           code: fd.identifier[0].value
         }
+        this.getChildLocations(fd.identifier[0].value);
       }
 
+
     })
+  }
+
+  getChildLocations(onsCode) {
+    if (onsCode == 'E40000000') {
+      this.parentLocations = this.toplocations;
+    } else {
+      this.parentLocations = [];
+      this.fhirService.get("/Location?partof.identifier=" + onsCode).subscribe(result => {
+        const bundle = <R4.IBundle>result;
+        for (const entry of bundle.entry) {
+          var fd: ILocation = <ILocation>entry.resource;
+          this.parentLocations.push({
+            name: fd.name,
+            code: fd.identifier[0].value
+          });
+        }
+
+      })
+    }
   }
 
   doSetup(): void {
@@ -539,22 +559,24 @@ export class NhsOneoneoneComponent implements OnInit {
         avg.push(seriestotal/count);
       }
     }
-
-    var stdv = std(avg);
     this.dailyOnlineReference = [];
+    if (avg.length>0) {
+      var stdv = std(avg);
 
-    this.dailyOnlineReference.push({
-      name : '0',
-      value : total/cnt
-    });
-    this.dailyOnlineReference.push({
-      name : '+',
-      value : (total/cnt) + stdv
-    });
-    this.dailyOnlineReference.push({
-      name : '-',
-      value : (total/cnt) - stdv
-    });
+
+      this.dailyOnlineReference.push({
+        name: '0',
+        value: total / cnt
+      });
+      this.dailyOnlineReference.push({
+        name: '+',
+        value: (total / cnt) + stdv
+      });
+      this.dailyOnlineReference.push({
+        name: '-',
+        value: (total / cnt) - stdv
+      });
+    }
 
     total = 0;
     cnt = 0;
@@ -574,20 +596,23 @@ export class NhsOneoneoneComponent implements OnInit {
         avg.push(seriestotal/count);
       }
     }
-    stdv = std(avg);
     this.dailyTriageReference = [];
-    this.dailyTriageReference.push({
-      name : '0',
-      value : total/cnt
-    });
-    this.dailyTriageReference.push({
-      name : '+',
-      value : (total/cnt)+stdv
-    });
-    this.dailyTriageReference.push({
-      name : '-',
-      value : (total/cnt)-stdv
-    });
+    if (avg.length>0) {
+      stdv = std(avg);
+
+      this.dailyTriageReference.push({
+        name: '0',
+        value: total / cnt
+      });
+      this.dailyTriageReference.push({
+        name: '+',
+        value: (total / cnt) + stdv
+      });
+      this.dailyTriageReference.push({
+        name: '-',
+        value: (total / cnt) - stdv
+      });
+    }
 
 
 
@@ -653,9 +678,10 @@ export class NhsOneoneoneComponent implements OnInit {
     if (name.startsWith('NHS ')) {
       name= name.substring(3,name.length);
     }
+    /*
     if (name.indexOf('(')>0) {
       name = name.substring(name.indexOf('(')+1).replace(')','');
-    }
+    }*/
     return name;
   }
 }

@@ -4,6 +4,12 @@ mat-toolbar {
   z-index: 100;
   width: 100%  !important;
 }
+
+mat-drawer {
+  height: 100vh;
+  position: fixed;
+}
+
 .app-body {
   margin-top: 66px;
 }
